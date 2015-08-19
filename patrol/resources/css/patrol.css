@@ -1,0 +1,20 @@
+.patrol h2,
+.patrol h3 {
+	color: #444;
+}
+
+.patrol .subtle {
+	color: #bbb;
+}
+
+.patrol .notice {
+	color: #aaa;
+	font-family: serif;
+	font-style: italic;
+}
+
+.patrol .section {
+	margin-top: 40px;
+	padding-top: 20px;
+	border-top: 1px dotted #bbb;
+}

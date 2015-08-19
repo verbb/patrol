@@ -1,0 +1,10 @@
+{
+  "name": "Patrol",
+  "version": "3.0.0",
+  "developer": "Selvin Ortiz",
+  "developerUrl": "https://selvinortiz.com",
+  "class": "craft\\plugins\\patrol\\Patrol",
+  "components": {
+    "default": "craft\\plugins\\patrol\\services\\DefaultService"
+  }
+}

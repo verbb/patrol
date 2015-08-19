@@ -1,0 +1,99 @@
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+	<script type="text/javascript">
+		var $settings = JSON.parse('{{ settingsJson|raw }}');
+	</script>
+
+	<div class="patrol">
+		<h2>{{ plugin.name }}&nbsp;<span class="subtle">V{{ plugin.version }}</span></h2>
+		<p>
+			{{ 'Simplifies **SSL Routing** and **Maintenance Mode**'|t('patrol')|md }}
+		</p>
+		<div class="section">
+			<h3 class="maintenance">{{ 'Maintenance Mode'|t('patrol') }}</h3>
+			<p class="subtle">{{ 'Enable maintenance mode and use the rules defined below'|t('patrol') }}</p>
+			{{
+				forms.lightswitch({
+					onLabel:	"On",
+					offLabel:	"Off",
+					name:		"maintenanceModeEnabled",
+					on:			settings.maintenanceModeEnabled,
+					errors:		settings.hasErrors('maintenanceModeEnabled') ? settings.getError('maintenanceModeEnabled')
+
+				})
+			}}
+			{{
+				forms.textField({
+					id:				"maintenanceModePageUrl",
+					name:			"maintenanceModePageUrl",
+					label:			"Maintenance Mode Page URL"|t('patrol'),
+					class:			"code",
+					placeholder:	"/maintenance",
+					instructions:	"The URL to redirect unauthorized traffic to if maintenance mode is enabled"|t('patrol'),
+					value:			settings.maintenanceModePageUrl,
+					errors:			settings.hasErrors('maintenanceModePageUrl') ? settings.getError('maintenanceModePageUrl')
+				})
+			}}
+
+			<div class="field">
+				<div class="heading">
+					<label>{{ 'Authorized IPs'|t('patrol') }}</label>
+					<div class="instructions">
+						<p>{{ 'The IP addresses that should be able to access the site while on maintenance mode'|t('patrol') }}</p>
+					</div>
+				</div>
+				<input type="hidden" name="maintenanceModeAuthorizedIps[]">
+				<div class="input" v-repeat="ip: maintenanceModeAuthorizedIps">
+					<input class="text nicetext code" type="text" v-model="ip" name="maintenanceModeAuthorizedIps[]" >
+					<button type="button" class="btn icon delete" v-on="click: removeIp(ip)"></button>
+				</div>
+			</div>
+			<div class="field">
+				<input type="text" class="text nicetext code" v-model="newIp" placeholder="127.0.0.1">
+				<button type="button" class="btn icon add" v-on="click: addIp"></button>
+			</div>
+		</div>
+
+		<div class="section">
+			<h3 class="security">{{ 'SSL Routing'|t('patrol') }}</h3>
+			<p class="subtle">{{ 'Enable SSL routing and force HTTPS using the rules defined below'|t('patrol') }}</p>
+			{{
+				forms.lightswitch({
+					onLabel:	"On",
+					offLabel:	"Off",
+					name:		"sslRoutingEnabled",
+					on:			settings.sslRoutingEnabled,
+					disabled:	configs.sslRoutingEnabled is defined ? true : false
+				})
+			}}
+
+			<div class="field">
+				<div class="heading">
+					<label>{{ 'Restricted URL Segments'|t('patrol') }}</label>
+					<div class="instructions">
+						<p>{{ 'The URL segments where HTTPS should be enforced'|t('patrol') }}</p>
+					</div>
+				</div>
+				<input type="hidden" name="sslRoutingRestrictedUrls[]">
+				<div class="input" v-repeat="url: sslRoutingRestrictedUrls">
+					<input class="text nicetext" type="text" v-model="url" name="sslRoutingRestrictedUrls[]" >
+					<button type="button" class="btn icon delete" v-on="click: removeUrl(url)"></button>
+				</div>
+			</div>
+			<div class="field">
+				<input type="text" class="text nicetext" v-model="newUrl" placeholder="/members">
+				<button type="button" class="btn icon add" v-on="click: addUrl"></button>
+			</div>
+		</div>
+
+		<div class="section credits">
+			<p>
+				&copy; {{ "now" | date("Y") }}
+				<strong>{{ 'Patrol'|t('patrol') }} <span class="subtle">({{ plugin.version }})</span></strong>
+				<em>by</em>
+				<a href="https://selv.in" title="Selvin Ortiz" target="_blank">Selvin Ortiz</a>
+			</p>
+		</div>
+	</div>
+{% endblock %}
