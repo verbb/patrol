@@ -5,7 +5,7 @@ Simplifies **Maintenance Mode** and **SSL Routing**
 - [Craft 3][craft3]
 
 ## Features
-1. Made with ![love][Love] by [Selvin Ortiz][me]
+1. Made with ![love] by [Selvin Ortiz][me]
 2. Maintenance mode control with permission/IP based authentication
 3. Advanced SSL routing without the need to mess with htaccess
 4. Flexible UI and file based plugin configuration
