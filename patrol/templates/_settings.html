@@ -2,6 +2,7 @@
 
 {% block content %}
 	<script type="text/javascript">
+		{# $settings is consumed by VueJS #}
 		var $settings = JSON.parse('{{ settingsJson|raw }}');
 	</script>
 
@@ -13,28 +14,24 @@
 		<div class="section">
 			<h3 class="maintenance">{{ 'Maintenance Mode'|t('patrol') }}</h3>
 			<p class="subtle">{{ 'Enable maintenance mode and use the rules defined below'|t('patrol') }}</p>
-			{{
-				forms.lightswitch({
-					onLabel:	"On",
-					offLabel:	"Off",
-					name:		"maintenanceModeEnabled",
-					on:			settings.maintenanceModeEnabled,
-					errors:		settings.hasErrors('maintenanceModeEnabled') ? settings.getError('maintenanceModeEnabled')
+			{{ forms.lightswitch({
+				onLabel:    "On",
+				offLabel:    "Off",
+				name:        "maintenanceModeEnabled",
+				on:            settings.maintenanceModeEnabled,
+				errors:        settings.hasErrors('maintenanceModeEnabled') ? settings.getError('maintenanceModeEnabled')
 
-				})
-			}}
-			{{
-				forms.textField({
-					id:				"maintenanceModePageUrl",
-					name:			"maintenanceModePageUrl",
-					label:			"Maintenance Mode Page URL"|t('patrol'),
-					class:			"code",
-					placeholder:	"/maintenance",
-					instructions:	"The URL to redirect unauthorized traffic to if maintenance mode is enabled"|t('patrol'),
-					value:			settings.maintenanceModePageUrl,
-					errors:			settings.hasErrors('maintenanceModePageUrl') ? settings.getError('maintenanceModePageUrl')
-				})
-			}}
+			}) }}
+			{{ forms.textField({
+				id:                "maintenanceModePageUrl",
+				name:            "maintenanceModePageUrl",
+				label:            "Maintenance Mode Page URL"|t('patrol'),
+				class:            "code",
+				placeholder:    "/maintenance",
+				instructions:    "The URL to redirect unauthorized traffic to if maintenance mode is enabled"|t('patrol'),
+				value:            settings.maintenanceModePageUrl,
+				errors:            settings.hasErrors('maintenanceModePageUrl') ? settings.getError('maintenanceModePageUrl')
+			}) }}
 
 			<div class="field">
 				<div class="heading">
@@ -45,7 +42,7 @@
 				</div>
 				<input type="hidden" name="maintenanceModeAuthorizedIps[]">
 				<div class="input" v-repeat="ip: maintenanceModeAuthorizedIps">
-					<input class="text nicetext code" type="text" v-model="ip" name="maintenanceModeAuthorizedIps[]" >
+					<input class="text nicetext code" type="text" v-model="ip" name="maintenanceModeAuthorizedIps[]">
 					<button type="button" class="btn icon delete" v-on="click: removeIp(ip)"></button>
 				</div>
 			</div>
@@ -58,15 +55,13 @@
 		<div class="section">
 			<h3 class="security">{{ 'SSL Routing'|t('patrol') }}</h3>
 			<p class="subtle">{{ 'Enable SSL routing and force HTTPS using the rules defined below'|t('patrol') }}</p>
-			{{
-				forms.lightswitch({
-					onLabel:	"On",
-					offLabel:	"Off",
-					name:		"sslRoutingEnabled",
-					on:			settings.sslRoutingEnabled,
-					disabled:	configs.sslRoutingEnabled is defined ? true : false
-				})
-			}}
+			{{ forms.lightswitch({
+				onLabel:    "On",
+				offLabel:    "Off",
+				name:        "sslRoutingEnabled",
+				on:            settings.sslRoutingEnabled,
+				disabled:    configs.sslRoutingEnabled is defined ? true : false
+			}) }}
 
 			<div class="field">
 				<div class="heading">
@@ -77,7 +72,7 @@
 				</div>
 				<input type="hidden" name="sslRoutingRestrictedUrls[]">
 				<div class="input" v-repeat="url: sslRoutingRestrictedUrls">
-					<input class="text nicetext" type="text" v-model="url" name="sslRoutingRestrictedUrls[]" >
+					<input class="text nicetext" type="text" v-model="url" name="sslRoutingRestrictedUrls[]">
 					<button type="button" class="btn icon delete" v-on="click: removeUrl(url)"></button>
 				</div>
 			</div>
@@ -92,7 +87,7 @@
 				&copy; {{ "now" | date("Y") }}
 				<strong>{{ 'Patrol'|t('patrol') }} <span class="subtle">({{ plugin.version }})</span></strong>
 				<em>by</em>
-				<a href="https://selv.in" title="Selvin Ortiz" target="_blank">Selvin Ortiz</a>
+				<a href="https://selvinortiz.com" title="Selvin Ortiz" target="_blank">Selvin Ortiz</a>
 			</p>
 		</div>
 	</div>
