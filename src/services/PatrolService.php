@@ -1,12 +1,14 @@
 <?php
 namespace selvinortiz\patrol\services;
 
+use yii\base\ErrorException;
+
 use Craft;
 use craft\base\Component;
 use craft\helpers\UrlHelper;
-use yii\base\ErrorException;
-use selvinortiz\patrol\models\SettingsModel;
+
 use selvinortiz\patrol\Patrol;
+use selvinortiz\patrol\models\SettingsModel;
 
 /**
  * Class PatrolService

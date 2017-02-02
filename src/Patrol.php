@@ -55,13 +55,13 @@ class Patrol extends Plugin
      */
 public function createSettingsModel()
 {
-    $localizedSettings = Craft::$app->getConfig()->get('settings', 'patrol');
+    $settings = Craft::$app->getConfig()->getConfigSettings('patrol');
 
-    if (! is_array($localizedSettings) || empty($localizedSettings)) {
+    if (! is_array($settings) || empty($settings)) {
         return new SettingsModel();
     }
 
-    return new SettingsModel($localizedSettings);
+    return new SettingsModel($settings);
 }
 
     /**

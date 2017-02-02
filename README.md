@@ -37,52 +37,48 @@
 ```php
 // config/patrol.php
 return [
-    'settings' => [
+    'primaryDomain'   => '*',
+    'sslRoutingEnabled' => false,
+    'sslRoutingRestrictedUrls' => [
+        '/{cpTrigger}',
+    ],
+    'maintenanceModeEnabled' => false,
+    'maintenanceModePageUrl'  => '/offline',
+    'maintenanceModeAuthorizedIps'   => [
+        '::1',
+        '127.0.0.1',
+    ],
+    'limitCpAccessTo' => [],
+];
+```
+
+### Configs for Multiple Environment
+>If you want to configure it based on the environment, you can do something like this.
+
+```php
+// config/patrol.php
+return [
+    '*' => [
         'primaryDomain'   => '*',
         'sslRoutingEnabled' => true,
         'sslRoutingRestrictedUrls' => [
             '/{cpTrigger}',
-            '/members',
         ],
         'maintenanceModeEnabled' => false,
-        'maintenanceModePageUrl'  => '/down',
+        'maintenanceModePageUrl'  => '/offline',
         'maintenanceModeAuthorizedIps'   => [
+            '::1',
             '127.0.0.1',
         ],
         'limitCpAccessTo' => [],
-    ]
-];
-```
-
->If you want to configure it based on the environment, you can do something like this.
-
-```
-// config/patrol.php
-return [
-	'*' => [
-		'settings' => [
-			'primaryDomain'   => '*',
-			'sslRoutingEnabled' => true,
-			'sslRoutingRestrictedUrls' => [
-				'/{cpTrigger}',
-				'/members',
-			],
-			'maintenanceModeEnabled' => false,
-			'maintenanceModePageUrl'  => '/down',
-			'maintenanceModeAuthorizedIps'   => [
-				'127.0.0.1',
-			],
-			'limitCpAccessTo' => [],
-		]
     ],
     '.dev' => [
-    	'settings' => [
-    		'sslRoutingEnabled' => false
-    	]
+        'primaryDomain' => 'craft.dev',
+        'sslRoutingEnabled' => false,
     ]
 ];
-```
 
+```
 
 ### Notes
 > Patrol will throw an `HttpException(403)` for unauthorized users during maintenance if you do not have an _offline page_ set up.
