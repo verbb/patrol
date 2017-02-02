@@ -1,15 +1,20 @@
 <?php
-namespace craft\plugins\patrol\models;
+namespace selvinortiz\patrol\models;
 
-use craft\app\base\Model;
+use craft\base\Model;
 
 /**
- * Class Settings
+ * Class SettingsModel
  *
- * @package craft\plugins\patrol
+ * @package selvinortiz\patrol
  */
-class Settings extends Model
-{
+class SettingsModel extends Model {
+
+    /**
+     * @var string
+     */
+    public $primaryDomain = '*';
+
     /**
      * Whether or not SSL routing should be enabled
      *
@@ -53,13 +58,17 @@ class Settings extends Model
     public $maintenanceModeAuthorizedIps = ['::1', '127.0.0.1'];
 
     /**
+     * @var array
+     */
+    public $limitCpAccessTo = [];
+
+    /**
      * @return array
      */
-    public function rules()
-    {
+    public function rules() {
         $rules = [
-            ['sslRoutingRestrictedUrls', 'craft\\plugins\\patrol\\validators\\RestrictedUrl'],
-            ['maintenanceModeAuthorizedIps', 'craft\\plugins\\patrol\\validators\\AuthorizedIp'],
+            ['sslRoutingRestrictedUrls', 'selvinortiz\\patrol\\validators\\RestrictedUrl'],
+            ['maintenanceModeAuthorizedIps', 'selvinortiz\\patrol\\validators\\AuthorizedIp'],
         ];
 
         return array_merge(parent::rules(), $rules);
@@ -70,8 +79,7 @@ class Settings extends Model
      *
      * @return string
      */
-    public function getJsonObject()
-    {
+    public function getJsonObject() {
         // array_filter() ensures that empty values are filtered out
         // array_values() ensures encoding to array rather than object
         $this->sslRoutingRestrictedUrls     = array_values(array_filter($this->sslRoutingRestrictedUrls));

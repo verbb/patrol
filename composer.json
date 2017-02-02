@@ -1,0 +1,40 @@
+{
+    "name": "selvinortiz/patrol",
+    "description": "Maintenance Mode & SSL Routing for Craft 3",
+    "version": "3.0.0",
+    "type": "craft-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Selvin Ortiz",
+            "email": "selvin@selvin.co"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "selvinortiz\\patrol\\": "src/"
+        }
+    },
+    "keywords": [
+        "craft",
+        "craftcms",
+        "plugin",
+        "patrol"
+    ],
+    "extra": {
+        "name": "Patrol",
+        "class": "selvinortiz\\patrol\\Patrol",
+        "handle": "patrol",
+        "version": "3.0.0",
+        "schemaVersion": "3.0.0",
+        "developer": "Selvin Ortiz",
+        "developerUrl": "https://selvinortiz.com",
+        "description": "Maintenance Mode & SSL Routing for Craft 3",
+        "documentationUrl": "https://github.com/selvinortiz/patrol/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/selvinortiz/patrol/CHANGELOG.md",
+        "hasSettings": true,
+        "components": {
+            "defaultService": "selvinortiz\\patrol\\services\\PatrolService"
+        }
+    }
+}

@@ -1,21 +1,22 @@
 <?php
-namespace craft\plugins\patrol\services;
+namespace selvinortiz\patrol\services;
 
 use Craft;
-use craft\app\base\Component;
-use craft\app\errors\ErrorException;
-use craft\plugins\patrol\models\Settings;
-use craft\plugins\patrol\Patrol;
+use craft\base\Component;
+use craft\helpers\UrlHelper;
+use yii\base\ErrorException;
+use selvinortiz\patrol\models\SettingsModel;
+use selvinortiz\patrol\Patrol;
 
 /**
- * Class DefaultService
+ * Class PatrolService
  *
- * @package craft\plugins\patrol\services
+ * @package selvinortiz\patrol\services
  */
-class DefaultService extends Component
-{
+class PatrolService extends Component {
+
     /**
-     * @var Settings
+     * @var SettingsModel
      */
     protected $settings;
 
@@ -26,8 +27,7 @@ class DefaultService extends Component
      */
     protected $dynamicParams;
 
-    public function watch()
-    {
+    public function watch() {
         $this->settings = Patrol::getInstance()->getSettings();
 
         $this->handleSslRouting();
@@ -40,20 +40,15 @@ class DefaultService extends Component
      *
      * @return bool
      */
-    public function handleSslRouting()
-    {
-        if ($this->settings->sslRoutingEnabled)
-        {
+    public function handleSslRouting() {
+        if ($this->settings->sslRoutingEnabled) {
             $requestedUrl   = Craft::$app->request->getUrl();
             $restrictedUrls = $this->settings->sslRoutingRestrictedUrls;
 
-            if (! Craft::$app->request->isSecureConnection)
-            {
-                foreach ($restrictedUrls as $restrictedUrl)
-                {
+            if (! Craft::$app->request->isSecureConnection) {
+                foreach ($restrictedUrls as $restrictedUrl) {
                     // Parse dynamic variables like /{cpTrigger}
-                    if (stripos($restrictedUrl, '{') !== false)
-                    {
+                    if (stripos($restrictedUrl, '{') !== false) {
                         $restrictedUrl = Craft::$app->view->renderObjectTemplate(
                             $restrictedUrl,
                             $this->getDynamicParams()
@@ -61,10 +56,9 @@ class DefaultService extends Component
 
                     }
 
-                    $restrictedUrl = '/'.ltrim($restrictedUrl, '/');
+                    $restrictedUrl = '/' . ltrim($restrictedUrl, '/');
 
-                    if (stripos($requestedUrl, $restrictedUrl) === 0)
-                    {
+                    if (stripos($requestedUrl, $restrictedUrl) === 0) {
                         $this->forceSsl();
                     }
                 }
@@ -81,19 +75,16 @@ class DefaultService extends Component
      *
      * @return array
      */
-    protected function getDynamicParams()
-    {
-        if (is_null($this->dynamicParams))
-        {
+    protected function getDynamicParams() {
+        if (is_null($this->dynamicParams)) {
             $variables           = Craft::$app->config->get('environmentVariables');
             $this->dynamicParams = [
-                'siteUrl'       => Craft::$app->getSiteUrl(),
+                'siteUrl'       => UrlHelper::siteUrl(),
                 'cpTrigger'     => Craft::$app->config->get('cpTrigger'),
                 'actionTrigger' => Craft::$app->config->get('actionTrigger'),
             ];
 
-            if (is_array($variables) && count($variables))
-            {
+            if (is_array($variables) && count($variables)) {
                 $this->dynamicParams = array_merge($this->dynamicParams, $variables);
             }
         }
@@ -104,8 +95,7 @@ class DefaultService extends Component
     /**
      * Redirects to the HTTPS version of the requested URL
      */
-    protected function forceSsl()
-    {
+    protected function forceSsl() {
         $baseUrl = Craft::$app->view->renderObjectTemplate(
             $this->settings->sslRoutingBaseUrl,
             $this->getDynamicParams()
@@ -113,16 +103,14 @@ class DefaultService extends Component
 
         $baseUrl = trim($baseUrl);
 
-        if (empty($baseUrl) || $baseUrl == '/')
-        {
+        if (empty($baseUrl) || $baseUrl == '/') {
             $baseUrl = Craft::$app->request->serverName;
         }
 
         $url = sprintf('%s%s', $baseUrl, ltrim(Craft::$app->request->getUrl(), '/')); // http://domain.com/page?query=something
         $url = str_replace('http:', 'https:', $url);                                  // https://domain.com/page?query=something
 
-        if (! filter_var($url, FILTER_VALIDATE_URL))
-        {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
             throw new ErrorException(Patrol::t('{url} is not a valid URL', ['url' => $url]));
         }
 
@@ -134,43 +122,34 @@ class DefaultService extends Component
      *
      * @return bool
      */
-    public function handleMaintenanceMode()
-    {
+    public function handleMaintenanceMode() {
         // Authorize logged in admins on the fly
-        if ($this->doesCurrentUserHaveAccess())
-        {
+        if ($this->doesCurrentUserHaveAccess()) {
             return true;
         }
 
-        if (Craft::$app->request->isSiteRequest && $this->settings->maintenanceModeEnabled)
-        {
+        if (Craft::$app->request->isSiteRequest && $this->settings->maintenanceModeEnabled) {
             $requestingIp   = $this->getRequestingIp();
             $authorizedIps  = $this->settings->maintenanceModeAuthorizedIps;
             $maintenanceUrl = $this->settings->maintenanceModePageUrl;
 
-            if ($maintenanceUrl == Craft::$app->request->getUrl())
-            {
+            if ($maintenanceUrl == Craft::$app->request->getUrl()) {
                 return true;
             }
 
-            if (empty($authorizedIps))
-            {
+            if (empty($authorizedIps)) {
                 $this->forceRedirect($maintenanceUrl);
             }
 
-            if (is_array($authorizedIps) && count($authorizedIps))
-            {
-                if (in_array($requestingIp, $authorizedIps))
-                {
+            if (is_array($authorizedIps) && count($authorizedIps)) {
+                if (in_array($requestingIp, $authorizedIps)) {
                     return true;
                 }
 
-                foreach ($authorizedIps as $authorizedIp)
-                {
+                foreach ($authorizedIps as $authorizedIp) {
                     $authorizedIp = str_replace('*', '', $authorizedIp);
 
-                    if (stripos($requestingIp, $authorizedIp) === 0)
-                    {
+                    if (stripos($requestingIp, $authorizedIp) === 0) {
                         return true;
                     }
                 }
@@ -183,17 +162,14 @@ class DefaultService extends Component
     /**
      * Returns whether or not the current user has access during maintenance mode
      */
-    protected function doesCurrentUserHaveAccess()
-    {
+    protected function doesCurrentUserHaveAccess() {
         // Admins have access by default
-        if (Craft::$app->user->getIsAdmin())
-        {
+        if (Craft::$app->user->getIsAdmin()) {
             return true;
         }
 
         // User has the right permission
-        if (Craft::$app->user->checkPermission(Patrol::MAINTENANCE_MODE_BYPASS_PERMISSION))
-        {
+        if (Craft::$app->user->checkPermission(Patrol::MAINTENANCE_MODE_BYPASS_PERMISSION)) {
             return true;
         }
 
@@ -205,8 +181,7 @@ class DefaultService extends Component
      *
      * @return string
      */
-    public function getRequestingIp()
-    {
+    public function getRequestingIp() {
         return isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
     }
 
@@ -215,10 +190,8 @@ class DefaultService extends Component
      *
      * @throws \HttpException
      */
-    protected function forceRedirect($redirectTo = '')
-    {
-        if (empty($redirectTo))
-        {
+    protected function forceRedirect($redirectTo = '') {
+        if (empty($redirectTo)) {
             $this->runDefaultBehavior();
         }
 
@@ -228,8 +201,7 @@ class DefaultService extends Component
     /**
      * @throws \HttpException
      */
-    protected function runDefaultBehavior()
-    {
+    protected function runDefaultBehavior() {
         throw new \HttpException(403);
     }
 
@@ -240,20 +212,17 @@ class DefaultService extends Component
      *
      * @return array
      */
-    public function parseAuthorizedIps($ips)
-    {
+    public function parseAuthorizedIps($ips) {
         $ips = trim($ips);
 
-        if (is_string($ips) && ! empty($ips))
-        {
+        if (is_string($ips) && ! empty($ips)) {
             $ips = explode(PHP_EOL, $ips);
         }
 
         return $this->filterOutArrayValues(
-            $ips, function ($val)
-            {
-                return preg_match('/^[0-9\.\*]{5,15}$/i', $val);
-            }
+            $ips, function ($val) {
+            return preg_match('/^[0-9\.\*]{5,15}$/i', $val);
+        }
         );
     }
 
@@ -266,27 +235,21 @@ class DefaultService extends Component
      *
      * @return array
      */
-    protected function filterOutArrayValues($values = null, \Closure $filter = null, $preserveKeys = false)
-    {
+    protected function filterOutArrayValues($values = null, \Closure $filter = null, $preserveKeys = false) {
         $data = [];
 
-        if (is_array($values) && count($values))
-        {
-            foreach ($values as $key => $value)
-            {
+        if (is_array($values) && count($values)) {
+            foreach ($values as $key => $value) {
                 $value = trim($value);
 
-                if (! empty($value))
-                {
-                    if (is_callable($filter) && $filter($value))
-                    {
+                if (! empty($value)) {
+                    if (is_callable($filter) && $filter($value)) {
                         $data[$key] = $value;
                     }
                 }
             }
 
-            if (! $preserveKeys)
-            {
+            if (! $preserveKeys) {
                 $data = array_values($data);
             }
         }
@@ -301,26 +264,22 @@ class DefaultService extends Component
      *
      * @return array
      */
-    public function parseRestrictedAreas($areas)
-    {
-        if (is_string($areas) && ! empty($areas))
-        {
+    public function parseRestrictedAreas($areas) {
+        if (is_string($areas) && ! empty($areas)) {
             $areas = trim($areas);
             $areas = explode(PHP_EOL, $areas);
         }
 
         return $this->filterOutArrayValues(
-            $areas, function ($val)
-            {
-                $valid = preg_match('/^[\/\{\}a-z\_\-\?\=]{1,255}$/i', $val);
+            $areas, function ($val) {
+            $valid = preg_match('/^[\/\{\}a-z\_\-\?\=]{1,255}$/i', $val);
 
-                if (! $valid)
-                {
-                    return false;
-                }
-
-                return true;
+            if (! $valid) {
+                return false;
             }
+
+            return true;
+        }
         );
     }
 }

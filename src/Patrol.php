@@ -1,20 +1,21 @@
 <?php
-namespace craft\plugins\patrol;
+namespace selvinortiz\patrol;
 
 use Craft;
-use craft\app\base\Plugin;
-use craft\app\helpers\Template;
-use craft\plugins\patrol\models\Settings;
-use craft\plugins\patrol\services\DefaultService;
+use craft\base\Plugin;
+use craft\helpers\Template;
+use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
+use selvinortiz\patrol\models\SettingsModel;
+use selvinortiz\patrol\services\PatrolService;
 
 /**
  * Class Plugin
  *
- * @package craft\plugins\patrol
+ * @package selvinortiz\patrol
  * @author  Selvin Ortiz <selvin@selvin.co>
  * @since   3.0
  *
- * @property DefaultService $default The default service instance
+ * @property PatrolService $default The default service instance
  */
 class Patrol extends Plugin
 {
@@ -42,20 +43,26 @@ class Patrol extends Plugin
 
         Craft::$app->plugins->on('afterLoadPlugins', function ()
         {
-            // We can do $this since Craft requires PHP 5.5=)
-            $this->default->watch();
+            // We can do $this since Craft requires PHP 7 =)
+            $this->defaultService->watch();
         });
     }
 
     /**
      * Returns settings model with custom properties
      *
-     * @return Settings
+     * @return SettingsModel
      */
-    public function createSettingsModel()
-    {
-        return new Settings();
+public function createSettingsModel()
+{
+    $localizedSettings = Craft::$app->getConfig()->get('settings', 'patrol');
+
+    if (! is_array($localizedSettings) || empty($localizedSettings)) {
+        return new SettingsModel();
     }
+
+    return new SettingsModel($localizedSettings);
+}
 
     /**
      * Returns rendered settings UI as a twig markup object
@@ -64,9 +71,13 @@ class Patrol extends Plugin
      *
      * @return \Twig_Markup
      */
-    public function getSettingsHtml()
+    public function settingsHtml()
     {
-        /** @var Settings $settings */
+        Craft::$app->view->registerAssetBundle(PatrolPluginAssetBundle::class);
+
+        /**
+         * @var SettingsModel $settings
+         */
         $settings  = $this->getSettings();
         $variables = [
             'plugin'       => $this,
@@ -74,13 +85,9 @@ class Patrol extends Plugin
             'settingsJson' => $settings->getJsonObject(),
         ];
 
-        Craft::$app->view->registerJsResource('patrol/js/vue.js');
-        Craft::$app->view->registerJsResource('patrol/js/patrol.js');
-        Craft::$app->view->registerCssResource('patrol/css/patrol.css');
-
         $html = Craft::$app->view->renderTemplate('patrol/_settings', $variables);
 
-        return Template::getRaw($html);
+        return Template::raw($html);
     }
 
     /**

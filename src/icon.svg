@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="-140.730214%" y1="100%" x2="-140.730219%" y2="0%" id="linearGradient-2">
+            <stop stop-color="#7B35B7" offset="0%"></stop>
+            <stop stop-color="#B450C5" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon" fill="url(#linearGradient-2)">
+            <g id="Logo" filter="url(#filter-1)" transform="translate(17.000000, 3.000000)">
+                <path d="M-1.42108547e-14,0 L-1.42108547e-14,228.991608 L27.4867685,250 L27.4867685,28.3703945 L149.362657,28.3703945 C154.740754,28.3703945 195.061626,31.8563523 194.794739,83.3974612 L194.794739,83.3974612 C194.513664,137.720599 154.268602,139.190073 149.621121,139.190073 L149.621121,139.190073 L78.0269559,139.190073 L78.0269559,250 L104.627054,228.991608 L104.627054,166.673464 L149.457087,166.673464 C150.608428,166.673464 178.12357,166.419021 199.144741,145.75949 L199.144741,145.75949 C214.207491,130.954808 221.858566,109.517764 221.998216,82.7422927 L221.998216,82.7422927 C222.412734,2.64771436 150.447941,0.020834183 149.721758,0.00443280488 L149.721758,0.00443280488 L-1.42108547e-14,0 Z" id="P"></path>
+                <polygon id="Key-Hole" points="123.053254 85.9947449 109.682596 74.6095765 80 74.6095765 80 87.2796175 105.510757 87.2796175 124.283372 104 141.027502 87.1284561 153.748112 100.016065 166 91.7336387 153.485364 80.345849 140.970287 69"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

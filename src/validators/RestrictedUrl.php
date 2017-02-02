@@ -1,14 +1,14 @@
 <?php
-namespace craft\plugins\patrol\validators;
+namespace selvinortiz\patrol\validators;
 
 use yii\validators\Validator;
 
 /**
- * Class AuthorizedIp
+ * Class RestrictedUrl
  *
- * @package craft\plugins\patrol\validators
+ * @package selvinortiz\patrol\validators
  */
-class AuthorizedIp extends Validator
+class RestrictedUrl extends Validator
 {
     /**
      * @param \yii\base\Model $model
@@ -23,7 +23,6 @@ class AuthorizedIp extends Validator
             $value = [];
         }
 
-        // Ensure unique, non-empty values, indexed from zero
         $value = array_values(array_unique(array_filter($value)));
 
         $model->{$attribute} = empty($value) ? [] : $value;
