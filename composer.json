@@ -1,7 +1,7 @@
 {
     "name": "selvinortiz/patrol",
     "description": "Maintenance Mode & SSL Routing for Craft 3",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "type": "craft-plugin",
     "license": "MIT",
     "authors": [
@@ -25,7 +25,7 @@
         "name": "Patrol",
         "class": "selvinortiz\\patrol\\Patrol",
         "handle": "patrol",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "schemaVersion": "3.0.0",
         "developer": "Selvin Ortiz",
         "developerUrl": "https://selvinortiz.com",
