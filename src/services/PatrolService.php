@@ -79,16 +79,11 @@ class PatrolService extends Component {
      */
     protected function getDynamicParams() {
         if (is_null($this->dynamicParams)) {
-            $variables           = Craft::$app->config->get('environmentVariables');
             $this->dynamicParams = [
                 'siteUrl'       => UrlHelper::siteUrl(),
-                'cpTrigger'     => Craft::$app->config->get('cpTrigger'),
-                'actionTrigger' => Craft::$app->config->get('actionTrigger'),
+                'cpTrigger'     => Craft::$app->config->general->cpTrigger,
+                'actionTrigger' => Craft::$app->config->general->actionTrigger,
             ];
-
-            if (is_array($variables) && count($variables)) {
-                $this->dynamicParams = array_merge($this->dynamicParams, $variables);
-            }
         }
 
         return $this->dynamicParams;
