@@ -37,5 +37,8 @@
         "components": {
             "defaultService": "selvinortiz\\patrol\\services\\PatrolService"
         }
+    },
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
     }
 }
