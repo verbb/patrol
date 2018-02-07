@@ -43,8 +43,9 @@ class PatrolService extends Component {
      * @return bool
      */
     public function handleSslRouting() {
-        if ($this->settings->sslRoutingEnabled) {
-            $requestedUrl   = Craft::$app->request->getUrl();
+        if ($this->settings->sslRoutingEnabled && !Craft::$app->getRequest()->getIsConsoleRequest()) {
+
+            $requestedUrl   = UrlHelper::url(Craft::$app->request->pathInfo());
             $restrictedUrls = $this->settings->sslRoutingRestrictedUrls;
 
             if (! Craft::$app->request->isSecureConnection) {
