@@ -11,7 +11,7 @@ use craft\base\Model;
 class SettingsModel extends Model {
 
     /**
-     * @var string
+     * @var string Primary domain to enfore
      */
     public $primaryDomain = '*';
 
@@ -36,6 +36,12 @@ class SettingsModel extends Model {
      */
     public $sslRoutingRestrictedUrls = ['/'];
 
+
+    /**
+     * @var int
+     */
+    public $sslRoutingRedirectStatusCode = 302;
+
     /**
      * Whether or not maintenance mode is enabled
      *
@@ -51,11 +57,24 @@ class SettingsModel extends Model {
     public $maintenanceModePageUrl = '/offline';
 
     /**
+     * @var int
+     */
+    public $maintenanceModelPageStatusCode = 302;
+
+    /**
+     * @var int
+     */
+    public $maintenanceModeExceptionStatusCode = 403;
+
+    /**
      * The IP addresses that should be allowed in during maintenance mode
      *
      * @var array
      */
-    public $maintenanceModeAuthorizedIps = ['::1', '127.0.0.1'];
+    public $maintenanceModeAuthorizedIps = [
+        '::1',
+        '127.0.0.1'
+    ];
 
     /**
      * @var array

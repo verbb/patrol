@@ -53,10 +53,10 @@ class Patrol extends Plugin
      *
      * @return SettingsModel
      */
-public function createSettingsModel()
-{
-    return new SettingsModel();
-}
+    public function createSettingsModel()
+    {
+        return new SettingsModel();
+    }
 
     /**
      * Returns rendered settings UI as a twig markup object

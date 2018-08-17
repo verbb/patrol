@@ -1,6 +1,7 @@
 <?php
 namespace selvinortiz\patrol\services;
 
+use yii\web\HttpException;
 use yii\base\ErrorException;
 
 use Craft;
@@ -15,8 +16,8 @@ use selvinortiz\patrol\models\SettingsModel;
  *
  * @package selvinortiz\patrol\services
  */
-class PatrolService extends Component {
-
+class PatrolService extends Component
+{
     /**
      * @var SettingsModel
      */
@@ -29,7 +30,8 @@ class PatrolService extends Component {
      */
     protected $dynamicParams;
 
-    public function watch() {
+    public function watch()
+    {
         $this->settings = Patrol::getInstance()->getSettings();
 
         $this->handleSslRouting();
@@ -41,27 +43,34 @@ class PatrolService extends Component {
      * The environment settings take priority over those defined in the control panel
      *
      * @return bool
+     *
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    public function handleSslRouting() {
-        if ($this->settings->sslRoutingEnabled && !Craft::$app->getRequest()->getIsConsoleRequest()) {
-
+    public function handleSslRouting()
+    {
+        if ($this->settings->sslRoutingEnabled && !Craft::$app->getRequest()->getIsConsoleRequest())
+        {
             $requestedUrl   = Craft::$app->request->getUrl();
             $restrictedUrls = $this->settings->sslRoutingRestrictedUrls;
 
-            if (! Craft::$app->request->isSecureConnection) {
-                foreach ($restrictedUrls as $restrictedUrl) {
+            if (!Craft::$app->request->isSecureConnection)
+            {
+                foreach ($restrictedUrls as $restrictedUrl)
+                {
                     // Parse dynamic variables like /{cpTrigger}
-                    if (stripos($restrictedUrl, '{') !== false) {
+                    if (stripos($restrictedUrl, '{') !== false)
+                    {
                         $restrictedUrl = Craft::$app->view->renderObjectTemplate(
                             $restrictedUrl,
                             $this->getDynamicParams()
                         );
-
                     }
 
-                    $restrictedUrl = '/' . ltrim($restrictedUrl, '/');
+                    $restrictedUrl = '/'.ltrim($restrictedUrl, '/');
 
-                    if (stripos($requestedUrl, $restrictedUrl) === 0) {
+                    if (stripos($requestedUrl, $restrictedUrl) === 0)
+                    {
                         $this->forceSsl();
                     }
                 }
@@ -77,9 +86,13 @@ class PatrolService extends Component {
      * Returns a list of dynamic parameters and their values that can be used in restricted area settings
      *
      * @return array
+     *
+     * @throws \yii\base\Exception
      */
-    protected function getDynamicParams() {
-        if (is_null($this->dynamicParams)) {
+    protected function getDynamicParams()
+    {
+        if (is_null($this->dynamicParams))
+        {
             $this->dynamicParams = [
                 'siteUrl'       => UrlHelper::siteUrl(),
                 'cpTrigger'     => Craft::$app->config->general->cpTrigger,
@@ -92,8 +105,13 @@ class PatrolService extends Component {
 
     /**
      * Redirects to the HTTPS version of the requested URL
+     *
+     * @throws ErrorException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    protected function forceSsl() {
+    protected function forceSsl()
+    {
         $baseUrl = Craft::$app->view->renderObjectTemplate(
             $this->settings->sslRoutingBaseUrl,
             $this->getDynamicParams()
@@ -101,53 +119,72 @@ class PatrolService extends Component {
 
         $baseUrl = trim($baseUrl);
 
-        if (empty($baseUrl) || $baseUrl == '/') {
+        if (empty($baseUrl) || $baseUrl == '/')
+        {
             $baseUrl = Craft::$app->request->serverName;
         }
 
         $url = sprintf('%s%s', $baseUrl, ltrim(Craft::$app->request->getUrl(), '/')); // http://domain.com/page?query=something
         $url = str_replace('http:', 'https:', $url);                                  // https://domain.com/page?query=something
 
-        if (! filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new ErrorException(Patrol::t('{url} is not a valid URL', ['url' => $url]));
+        if (!filter_var($url, FILTER_VALIDATE_URL))
+        {
+            throw new ErrorException(
+                Patrol::t('{url} is not a valid URL', ['url' => $url])
+            );
         }
 
-        Craft::$app->response->redirect($url);
+        Craft::$app->response->redirect(
+            $url,
+            $this->settings->sslRoutingRedirectStatusCode
+        );
     }
 
     /**
      * Restricts accessed based on authorizedIps
      *
      * @return bool
+     *
+     * @throws HttpException
+     * @throws \yii\base\InvalidConfigException
      */
-    public function handleMaintenanceMode() {
+    public function handleMaintenanceMode()
+    {
         // Authorize logged in admins on the fly
-        if ($this->doesCurrentUserHaveAccess()) {
+        if ($this->doesCurrentUserHaveAccess())
+        {
             return true;
         }
 
-        if (Craft::$app->request->isSiteRequest && $this->settings->maintenanceModeEnabled) {
+        if (Craft::$app->request->isSiteRequest && $this->settings->maintenanceModeEnabled)
+        {
             $requestingIp   = $this->getRequestingIp();
             $authorizedIps  = $this->settings->maintenanceModeAuthorizedIps;
             $maintenanceUrl = $this->settings->maintenanceModePageUrl;
 
-            if ($maintenanceUrl == Craft::$app->request->getUrl()) {
+            if ($maintenanceUrl == Craft::$app->request->getUrl())
+            {
                 return true;
             }
 
-            if (empty($authorizedIps)) {
+            if (empty($authorizedIps))
+            {
                 $this->forceRedirect($maintenanceUrl);
             }
 
-            if (is_array($authorizedIps) && count($authorizedIps)) {
-                if (in_array($requestingIp, $authorizedIps)) {
+            if (is_array($authorizedIps) && count($authorizedIps))
+            {
+                if (in_array($requestingIp, $authorizedIps))
+                {
                     return true;
                 }
 
-                foreach ($authorizedIps as $authorizedIp) {
+                foreach ($authorizedIps as $authorizedIp)
+                {
                     $authorizedIp = str_replace('*', '', $authorizedIp);
 
-                    if (stripos($requestingIp, $authorizedIp) === 0) {
+                    if (stripos($requestingIp, $authorizedIp) === 0)
+                    {
                         return true;
                     }
                 }
@@ -160,14 +197,17 @@ class PatrolService extends Component {
     /**
      * Returns whether or not the current user has access during maintenance mode
      */
-    protected function doesCurrentUserHaveAccess() {
+    protected function doesCurrentUserHaveAccess()
+    {
         // Admins have access by default
-        if (Craft::$app->user->getIsAdmin()) {
+        if (Craft::$app->user->getIsAdmin())
+        {
             return true;
         }
 
         // User has the right permission
-        if (Craft::$app->user->checkPermission(Patrol::MAINTENANCE_MODE_BYPASS_PERMISSION)) {
+        if (Craft::$app->user->checkPermission(Patrol::MAINTENANCE_MODE_BYPASS_PERMISSION))
+        {
             return true;
         }
 
@@ -179,28 +219,32 @@ class PatrolService extends Component {
      *
      * @return string
      */
-    public function getRequestingIp() {
+    public function getRequestingIp()
+    {
         return isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
     }
 
     /**
      * @param string $redirectTo
      *
-     * @throws \HttpException
+     * @throws HttpException
      */
-    protected function forceRedirect($redirectTo = '') {
-        if (empty($redirectTo)) {
+    protected function forceRedirect($redirectTo = '')
+    {
+        if (empty($redirectTo))
+        {
             $this->runDefaultBehavior();
         }
 
-        Craft::$app->response->redirect($redirectTo);
+        Craft::$app->response->redirect($redirectTo, $this->settings->maintenanceModelPageStatusCode);
     }
 
     /**
-     * @throws \HttpException
+     * @throws HttpException
      */
-    protected function runDefaultBehavior() {
-        throw new \HttpException(403);
+    protected function runDefaultBehavior()
+    {
+        throw new HttpException($this->settings->maintenanceModeExceptionStatusCode);
     }
 
     /**
@@ -210,15 +254,17 @@ class PatrolService extends Component {
      *
      * @return array
      */
-    public function parseAuthorizedIps($ips) {
+    public function parseAuthorizedIps($ips)
+    {
         $ips = trim($ips);
 
-        if (is_string($ips) && ! empty($ips)) {
+        if (is_string($ips) && !empty($ips))
+        {
             $ips = explode(PHP_EOL, $ips);
         }
 
         return $this->filterOutArrayValues(
-            $ips, function ($val) {
+            $ips, function($val) {
             return preg_match('/^[0-9\.\*]{5,15}$/i', $val);
         }
         );
@@ -233,21 +279,27 @@ class PatrolService extends Component {
      *
      * @return array
      */
-    protected function filterOutArrayValues($values = null, \Closure $filter = null, $preserveKeys = false) {
+    protected function filterOutArrayValues($values = null, \Closure $filter = null, $preserveKeys = false)
+    {
         $data = [];
 
-        if (is_array($values) && count($values)) {
-            foreach ($values as $key => $value) {
+        if (is_array($values) && count($values))
+        {
+            foreach ($values as $key => $value)
+            {
                 $value = trim($value);
 
-                if (! empty($value)) {
-                    if (is_callable($filter) && $filter($value)) {
+                if (!empty($value))
+                {
+                    if (is_callable($filter) && $filter($value))
+                    {
                         $data[$key] = $value;
                     }
                 }
             }
 
-            if (! $preserveKeys) {
+            if (!$preserveKeys)
+            {
                 $data = array_values($data);
             }
         }
@@ -262,17 +314,20 @@ class PatrolService extends Component {
      *
      * @return array
      */
-    public function parseRestrictedAreas($areas) {
-        if (is_string($areas) && ! empty($areas)) {
+    public function parseRestrictedAreas($areas)
+    {
+        if (is_string($areas) && !empty($areas))
+        {
             $areas = trim($areas);
             $areas = explode(PHP_EOL, $areas);
         }
 
         return $this->filterOutArrayValues(
-            $areas, function ($val) {
+            $areas, function($val) {
             $valid = preg_match('/^[\/\{\}a-z\_\-\?\=]{1,255}$/i', $val);
 
-            if (! $valid) {
+            if (!$valid)
+            {
                 return false;
             }
 
