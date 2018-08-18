@@ -58,12 +58,12 @@ class SettingsModel extends Model
     /**
      * @var int
      */
-    public $maintenanceModelPageStatusCode = 302;
+    public $maintenanceModelRedirectStatusCode = 302;
 
     /**
      * @var int
      */
-    public $maintenanceModeExceptionStatusCode = 403;
+    public $maintenanceModeResponseStatusCode = 403;
 
     /**
      * The IP addresses that should be allowed in during maintenance mode
