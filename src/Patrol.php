@@ -1,9 +1,15 @@
 <?php
 namespace selvinortiz\patrol;
 
+use yii\base\Event;
+
 use Craft;
 use craft\base\Plugin;
 use craft\helpers\Template;
+
+use craft\services\UserPermissions;
+use craft\events\RegisterUserPermissionsEvent;
+
 use selvinortiz\patrol\models\SettingsModel;
 use selvinortiz\patrol\services\PatrolService;
 use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
@@ -33,18 +39,29 @@ class Patrol extends Plugin
     }
 
     /**
-     * Run watch() once plugins have been loaded to avoid raise conditions
-     *
-     * @return void
+     * @throws \yii\base\ErrorException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\web\HttpException
      */
     public function init()
     {
         parent::init();
 
-        Craft::$app->plugins->on('afterLoadPlugins', function() {
-            // We can do $this since Craft requires PHP 7 =)
+        if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isLivePreview)
+        {
             $this->defaultService->watch();
-        });
+        }
+
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function(RegisterUserPermissionsEvent $event)
+            {
+                $section = \Craft::t('patrol', 'Section');
+                $event->permissions[$section] = $this->getPermissionsToRegister();
+            }
+        );
     }
 
     /**
@@ -87,7 +104,7 @@ class Patrol extends Plugin
     /**
      * @return array
      */
-    public function registerUserPermissions()
+    protected function getPermissionsToRegister()
     {
         return [
             static::MAINTENANCE_MODE_BYPASS_PERMISSION => [
