@@ -24,12 +24,18 @@ class PatrolService extends Component
     protected $settings;
 
     /**
-     * An array of key/value pairs used when parsing restricted areas like {cpTrigger}
+     * Key/value pairs used when parsing restricted areas like {cpTrigger}
      *
      * @var array
      */
     protected $dynamicParams;
 
+    /**
+     * @throws ErrorException
+     * @throws HttpException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
     public function watch()
     {
         $this->settings = Patrol::getInstance()->getSettings();
@@ -44,6 +50,7 @@ class PatrolService extends Component
      *
      * @return bool
      *
+     * @throws ErrorException
      * @throws \yii\base\Exception
      * @throws \yii\base\InvalidConfigException
      */
@@ -308,7 +315,7 @@ class PatrolService extends Component
     }
 
     /**
-     * Parser restricted areas to ensure they are valid even when created from a string
+     * Parse restricted areas to ensure they are valid even when created from a string
      *
      * @param array|string $areas
      *
@@ -323,16 +330,17 @@ class PatrolService extends Component
         }
 
         return $this->filterOutArrayValues(
-            $areas, function($val) {
-            $valid = preg_match('/^[\/\{\}a-z\_\-\?\=]{1,255}$/i', $val);
+            $areas,
+            function($val) {
+                $valid = preg_match('/^[\/\{\}a-z\_\-\?\=]{1,255}$/i', $val);
 
-            if (!$valid)
-            {
-                return false;
+                if (!$valid)
+                {
+                    return false;
+                }
+
+                return true;
             }
-
-            return true;
-        }
         );
     }
 }

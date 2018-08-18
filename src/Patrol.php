@@ -4,9 +4,9 @@ namespace selvinortiz\patrol;
 use Craft;
 use craft\base\Plugin;
 use craft\helpers\Template;
-use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
 use selvinortiz\patrol\models\SettingsModel;
 use selvinortiz\patrol\services\PatrolService;
+use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
 
 /**
  * Class Plugin
@@ -15,7 +15,7 @@ use selvinortiz\patrol\services\PatrolService;
  * @author  Selvin Ortiz <selvin@selvin.co>
  * @since   3.0
  *
- * @property PatrolService $default The default service instance
+ * @property PatrolService $defaultService The default service instance
  */
 class Patrol extends Plugin
 {
@@ -41,8 +41,7 @@ class Patrol extends Plugin
     {
         parent::init();
 
-        Craft::$app->plugins->on('afterLoadPlugins', function ()
-        {
+        Craft::$app->plugins->on('afterLoadPlugins', function() {
             // We can do $this since Craft requires PHP 7 =)
             $this->defaultService->watch();
         });
@@ -61,9 +60,10 @@ class Patrol extends Plugin
     /**
      * Returns rendered settings UI as a twig markup object
      *
-     * @todo: Remove getRaw() call once the raw filter gets added by Craft
-     *
      * @return \Twig_Markup
+     * @throws \Twig_Error_Loader
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function settingsHtml()
     {

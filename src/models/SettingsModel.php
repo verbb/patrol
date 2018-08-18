@@ -8,10 +8,10 @@ use craft\base\Model;
  *
  * @package selvinortiz\patrol
  */
-class SettingsModel extends Model {
-
+class SettingsModel extends Model
+{
     /**
-     * @var string Primary domain to enfore
+     * @var string Primary domain to enforce
      */
     public $primaryDomain = '*';
 
@@ -35,7 +35,6 @@ class SettingsModel extends Model {
      * @var array
      */
     public $sslRoutingRestrictedUrls = ['/'];
-
 
     /**
      * @var int
@@ -84,7 +83,8 @@ class SettingsModel extends Model {
     /**
      * @return array
      */
-    public function rules() {
+    public function rules()
+    {
         $rules = [
             ['sslRoutingRestrictedUrls', 'selvinortiz\\patrol\\validators\\RestrictedUrl'],
             ['maintenanceModeAuthorizedIps', 'selvinortiz\\patrol\\validators\\AuthorizedIp'],
@@ -98,7 +98,8 @@ class SettingsModel extends Model {
      *
      * @return string
      */
-    public function getJsonObject() {
+    public function getJsonObject()
+    {
         // array_filter() ensures that empty values are filtered out
         // array_values() ensures encoding to array rather than object
         $this->sslRoutingRestrictedUrls     = array_values(array_filter($this->sslRoutingRestrictedUrls));
