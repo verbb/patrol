@@ -2,61 +2,40 @@
 ![Patrol](resources/img/Patrol3.png)
 
 # Patrol 3
-> **Maintenance Mode** and **SSL Routing**
+Maintenance Mode and SSL Routing for [Craft 3][craft]
 
-## Installation
-1. Download via composer: `composer require selvinortiz/patrol`
-2. Install from the **Control Panel**: `Settings > Plugins`
+## Features
 
-### Features
-- Made with ![love] by [Selvin Ortiz][me]
-- Allows you to _force SSL_ on specific areas of your site or globally
-- Allows you to put your site on _maintenance mode_ and route traffic to your _offline page_
-- Allows you to define who can access your website during maintenance
-- Allows you to enforce a primary domain (`primaryDomain environment config`)
-- Allows you to limit control panel access (`limitCpAccessTo environment config`)
+###3 SSL Routing
+- Force HTTPS (server agnostic)
+- Force a Primary Domain (naked domain vs www prefixed)
+- Define where HTTPS is enforced (if not globally)
+- Configure the best redirect status code for your use case
 
-> You can let users access your website during maintenance by:
-- Making them **admins**
-- Authorizing their **IP address**
-- Giving them this permission: `Patrol > Access the site when maintenance is on`
+#### Maintenance Mode
+- Put your site on maintenance mode
+- Define who can access the site while offline
+- Control what everyone else sees (offline page or custom http response)
 
-> If you want to block all users, (including admins) during maintenance:
-- Add your email or username to `limitCpAccessTo` in your _config file_ and login with that account
+---
 
-## @Todo
-- Fix user permissions for permission based access
-- Add other validators for remaining settings
-- Review the way localized settings are being populated
-- Review `limitCpAccessTo` functionality
-- Review URL matching/parsing and redirects
+## Install
+```bash
+composer require selvinortiz/patrol
 
-### Environment Configs
-> You can configure Patrol via a dedicated config file.
-
-```php
-// config/patrol.php
-return [
-    'primaryDomain'   => '*',
-    'sslRoutingEnabled' => false,
-    'sslRoutingRestrictedUrls' => [
-        '/{cpTrigger}',
-    ],
-    'maintenanceModeEnabled' => false,
-    'maintenanceModePageUrl'  => '/offline',
-    'maintenanceModeAuthorizedIps'   => [
-        '::1',
-        '127.0.0.1',
-    ],
-    'limitCpAccessTo' => [],
-];
+./craft plugin/install patrol
 ```
 
-### Configs for Multiple Environment
->If you want to configure it based on the environment, you can do something like this.
+...or you can search for Patrol in the Plugin Store.
 
+---
+
+## Configure
+You can configure some stuff through the control panel, but doing so is not recommended. File configs are much more flexible and you can define different configs for different environments.
+
+#### Example
 ```php
-// config/patrol.php
+//config/patrol.php
 return [
     '*' => [
         'primaryDomain'   => '*',
@@ -70,15 +49,60 @@ return [
             '::1',
             '127.0.0.1',
         ],
-        'limitCpAccessTo' => [],
     ],
-    '.dev' => [
-        'primaryDomain' => 'craft.dev',
+    'dev' => [
         'sslRoutingEnabled' => false,
+    ]
+    'staging' => [
+        'maintenanceModePageUrl' => null, // Won't show a page
+        'maintenanceModeExceptionStatusCode' => 410 // Gone away!
+    ],
+    'production' => [
+        'maintenanceModeRedirectStatusCode' => 503 // Service Unavailable
     ]
 ];
 
 ```
+
+### Config Legend
+
+#### `$primaryDomain`
+
+Allows you to enforce a primary domain to avoid duplicate content penalties.
+
+_Say that you're hosting you website at **Fortrabbit** and your App URL is my-staging-server.frb.io and you have routed your domain my-site.com. Both of those URLs are accessible and they show the same content. In Patrol, you could set the primary domain to my-site.com and anytime my-staging-server.frb.io is requested, it will be routed to my-site.com._
+
+#### `$sslRoutingEnabled`
+Tells Patrol to force requests to be made over `https://`
+
+#### `$sslRoutingRestrictedAreas`
+Tells Patrol _where_ `https://` should be enforced. Default is `/`, which means everywhere.
+
+#### `$maintenanceModeEnabled`
+> Defaults to `false`
+
+Tells Patrol that your site is on maintenance mode and it should start routing traffic differently.
+
+Authorized users will see your site while unauthorized users will see either your offline page or an https response with a custom status code.
+
+#### `$maintenanceModeRedirectStatusCode`
+> Defaults to `302`
+
+Allows you to customize the status code when redirecting to your offline page during maintenance mode.
+
+#### `$maintenanceModeResponseStatusCode`
+> Defaults to `410`
+
+Tells Patrol what kind of `HttpException` to throw in the event that you chose not to use an offline page.
+
+---
+
+## @Todo
+- Fix user permissions for permission based access
+- Add other validators for remaining settings
+- Review the way localized settings are being populated
+- Review `limitCpAccessTo` functionality
+- Review URL matching/parsing and redirects
 
 ### Notes
 > Patrol will throw an `HttpException(403)` for unauthorized users during maintenance if you do not have an _offline page_ set up.
@@ -89,7 +113,7 @@ return [
 If you have questions, comments, or suggestions, feel free to reach out to me on twitter [@selvinortiz](https://twitter.com/selvinortiz)
 
 ## License
-**Patrol** for [Craft 3][craft3] is open source software
+**Patrol** for [Craft CMS][craft] is open source software
 
 [MIT License][mit]
 
@@ -99,4 +123,4 @@ If you have questions, comments, or suggestions, feel free to reach out to me on
 [mit]:http://opensource.org/licenses/MIT "MIT License"
 [osi]:resources/img/osilogo.png "Open Source Initiative"
 [love]:resources/img/love.png "Love"
-[craft3]:http://buildwithcraft.com/3 "Craft 3"
+[craft]:http://craftcms.com "Craft 3"
