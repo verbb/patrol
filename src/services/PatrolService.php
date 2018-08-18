@@ -40,8 +40,45 @@ class PatrolService extends Component
     {
         $this->settings = Patrol::getInstance()->getSettings();
 
+        $this->handleRouting();
         $this->handleSslRouting();
         $this->handleMaintenanceMode();
+    }
+
+    /**
+     * @throws ErrorException
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function handleRouting()
+    {
+        if (!is_string($this->settings->primaryDomain) || empty($this->settings->primaryDomain))
+        {
+            return;
+        }
+
+        $primaryDomain   = mb_strtolower(trim($this->settings->primaryDomain));
+        $requestedDomain = mb_strtolower(trim(Craft::$app->request->getHostName()));
+
+        if ($primaryDomain === '*')
+        {
+            return;
+        }
+
+        if ($primaryDomain === $requestedDomain)
+        {
+            return;
+        }
+
+        $this->settings->sslRoutingBaseUrl = $primaryDomain;
+
+        $this->handleSslRouting();
+
+        $http = Craft::$app->request->getIsSecureConnection() ? 'https://' : 'http://';
+
+        $url = $http.$primaryDomain.Craft::$app->request->getUrl();
+
+        Craft::$app->response->redirect($url, $this->settings->sslRoutingRedirectStatusCode);
     }
 
     /**
