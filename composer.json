@@ -25,14 +25,12 @@
         "name": "Patrol",
         "class": "selvinortiz\\patrol\\Patrol",
         "handle": "patrol",
-        "version": "3.0.2",
         "schemaVersion": "3.0.0",
         "developer": "Selvin Ortiz",
         "developerUrl": "https://selvinortiz.com",
         "description": "Maintenance Mode & SSL Routing for Craft 3",
         "documentationUrl": "https://github.com/selvinortiz/patrol/blob/master/README.md",
         "changelogUrl": "https://raw.githubusercontent.com/selvinortiz/patrol/CHANGELOG.md",
-        "hasCpSection": false,
         "hasCpSettings": true,
         "components": {
             "defaultService": "selvinortiz\\patrol\\services\\PatrolService"

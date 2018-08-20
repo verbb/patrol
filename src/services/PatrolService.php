@@ -30,6 +30,29 @@ class PatrolService extends Component
      */
     protected $dynamicParams;
 
+    public function init()
+    {
+        parent::init();
+
+        $this->settings = Patrol::getInstance()->getSettings();
+    }
+
+    public function allow()
+    {
+        $requestToken = Craft::$app->request->getQueryParam('access');
+        $requestingIp = Craft::$app->request->getUserIp();
+
+        if (!empty($requestToken) && in_array($requestToken, $this->settings->maintenanceModeAccessTokens))
+        {
+            if (!in_array($requestingIp, $this->settings->maintenanceModeAuthorizedIps))
+            {
+                $this->settings->maintenanceModeAuthorizedIps[] = $requestingIp;
+
+                Craft::$app->plugins->savePluginSettings(Patrol::getInstance(), $this->settings->getAttributes());
+            }
+        }
+    }
+
     /**
      * @throws ErrorException
      * @throws HttpException
@@ -38,8 +61,6 @@ class PatrolService extends Component
      */
     public function watch()
     {
-        $this->settings = Patrol::getInstance()->getSettings();
-
         $this->handleRouting();
         $this->handleSslRouting();
         $this->handleMaintenanceMode();
@@ -174,7 +195,7 @@ class PatrolService extends Component
         if (!filter_var($url, FILTER_VALIDATE_URL))
         {
             throw new ErrorException(
-                Patrol::t('{url} is not a valid URL', ['url' => $url])
+                Craft::t('patrol', '{url} is not a valid URL', ['url' => $url])
             );
         }
 
@@ -288,7 +309,7 @@ class PatrolService extends Component
      */
     protected function runDefaultBehavior()
     {
-        throw new HttpException($this->settings->maintenanceModeExceptionStatusCode);
+        throw new HttpException($this->settings->maintenanceModeResponseStatusCode);
     }
 
     /**

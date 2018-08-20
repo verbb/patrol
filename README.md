@@ -6,16 +6,16 @@ Maintenance Mode and SSL Routing for [Craft 3][craft]
 
 ## Features
 
-###3 SSL Routing
+### SSL Routing
 - Force HTTPS (server agnostic)
 - Force a Primary Domain (naked domain vs www prefixed)
 - Define where HTTPS is enforced (if not globally)
-- Configure the best redirect status code for your use case
+- Control the best redirect status code for your use case
 
 #### Maintenance Mode
 - Put your site on maintenance mode
 - Define who can access the site while offline
-- Control what everyone else sees (offline page or custom http response)
+- Reroute guests to offline page (or custom response)
 
 ---
 

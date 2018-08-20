@@ -27,16 +27,9 @@ class Patrol extends Plugin
 {
     const MAINTENANCE_MODE_BYPASS_PERMISSION = 'patrolMaintenanceModeBypass';
 
-    /**
-     * @param string $message
-     * @param array  $params
-     *
-     * @return string
-     */
-    public static function t($message, array $params = [])
-    {
-        return Craft::t('patrol', $message, $params);
-    }
+    public $hasCpSection = true;
+
+    public $controllerNamespace = 'selvinortiz\\patrol\\controllers';
 
     /**
      * @throws \yii\base\ErrorException
@@ -50,6 +43,7 @@ class Patrol extends Plugin
 
         if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isLivePreview)
         {
+            $this->defaultService->allow();
             $this->defaultService->watch();
         }
 
@@ -59,6 +53,7 @@ class Patrol extends Plugin
             function(RegisterUserPermissionsEvent $event)
             {
                 $section = \Craft::t('patrol', 'Section');
+
                 $event->permissions[$section] = $this->getPermissionsToRegister();
             }
         );
