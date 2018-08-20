@@ -99,7 +99,7 @@ class PatrolService extends Component
 
         $url = $http.$primaryDomain.Craft::$app->request->getUrl();
 
-        Craft::$app->response->redirect($url, $this->settings->sslRoutingRedirectStatusCode);
+        Craft::$app->response->redirect($url, $this->settings->redirectStatusCode);
     }
 
     /**
@@ -201,7 +201,7 @@ class PatrolService extends Component
 
         Craft::$app->response->redirect(
             $url,
-            $this->settings->sslRoutingRedirectStatusCode
+            $this->settings->redirectStatusCode
         );
     }
 

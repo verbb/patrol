@@ -52,7 +52,7 @@ class Patrol extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function(RegisterUserPermissionsEvent $event)
             {
-                $section = \Craft::t('patrol', 'Section');
+                $section = \Craft::t('patrol', 'Patrol');
 
                 $event->permissions[$section] = $this->getPermissionsToRegister();
             }
@@ -103,7 +103,7 @@ class Patrol extends Plugin
     {
         return [
             static::MAINTENANCE_MODE_BYPASS_PERMISSION => [
-                'label' => static::t('Access the site when maintenance mode is enabled'),
+                'label' => Craft::t('patrol', 'Access the site when maintenance mode is enabled'),
             ],
         ];
     }
