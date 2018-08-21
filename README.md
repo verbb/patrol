@@ -4,15 +4,15 @@
 # Patrol 3
 Maintenance Mode and SSL Routing for [Craft 3][craft]
 
-## Features
+## Features 🚀
 
-### SSL Routing
+### SSL Routing 👮‍
 - Force HTTPS (server agnostic)
 - Force a Primary Domain (naked domain vs www prefixed)
 - Define where HTTPS is enforced (if not globally)
 - Control the best redirect status code for your use case
 
-#### Maintenance Mode
+#### Maintenance Mode 🚧
 - Put your site on maintenance mode
 - Define who can access the site while offline
 - Reroute guests to offline page (or custom response)
@@ -23,7 +23,7 @@ Maintenance Mode and SSL Routing for [Craft 3][craft]
 ```bash
 composer require selvinortiz/patrol
 
-./craft plugin/install patrol
+./craft install/plugin patrol
 ```
 
 ...or you can search for Patrol in the Plugin Store.
@@ -33,15 +33,14 @@ composer require selvinortiz/patrol
 ## Configure
 You can configure some stuff through the control panel, but doing so is not recommended. File configs are much more flexible and you can define different configs for different environments.
 
-#### Example
 ```php
-//config/patrol.php
 return [
     '*' => [
         'primaryDomain'   => '*',
+        'redirectStatusCode'   => 302,
         'sslRoutingEnabled' => true,
         'sslRoutingRestrictedUrls' => [
-            '/{cpTrigger}',
+            '/{cpTrigger}'
         ],
         'maintenanceModeEnabled' => false,
         'maintenanceModePageUrl'  => '/offline',
@@ -54,11 +53,11 @@ return [
         'sslRoutingEnabled' => false,
     ]
     'staging' => [
-        'maintenanceModePageUrl' => null, // Won't show a page
-        'maintenanceModeExceptionStatusCode' => 410 // Gone away!
+        'maintenanceModePageUrl' => null
+        'maintenanceModeResponseStatusCode' => 410
     ],
     'production' => [
-        'maintenanceModeRedirectStatusCode' => 503 // Service Unavailable
+        'maintenanceModeRedirectStatusCode' => 503
     ]
 ];
 
@@ -67,47 +66,78 @@ return [
 ### Config Legend
 
 #### `$primaryDomain`
+> Defaults to `null`
 
-Allows you to enforce a primary domain to avoid duplicate content penalties.
+Primary domain to enforce
 
-_Say that you're hosting you website at **Fortrabbit** and your App URL is my-staging-server.frb.io and you have routed your domain my-site.com. Both of those URLs are accessible and they show the same content. In Patrol, you could set the primary domain to my-site.com and anytime my-staging-server.frb.io is requested, it will be routed to my-site.com._
+If your site is accessible via multiple domains,
+you may want to ensure that it can only be accessed by the primary domain.
+
+**Example**
+- domain.frb.io (App URL)
+- www.domain.com (Secondary)
+- domain.com (Primary)
+
+If a user requests `www.domain.com` or `domain.frb.io`, they will be redirected to `domain.com`
+
+#### `$redirectStatusCode`
+> Defaults to `302`
+
+Redirect status code to use when...
+1. redirecting to and from SSL restricted URLs
+2. redirecting to primary domain, if one is defined.
+
 
 #### `$sslRoutingEnabled`
+> Defaults to `false`
+
 Tells Patrol to force requests to be made over `https://`
 
-#### `$sslRoutingRestrictedAreas`
-Tells Patrol _where_ `https://` should be enforced. Default is `/`, which means everywhere.
+#### `$sslRoutingRestrictedUrls`
+> Defaults to `['/']` (everything)
+
+Tells Patrol **where** `https://` should be enforced. Default is `/`, which means everywhere.
 
 #### `$maintenanceModeEnabled`
 > Defaults to `false`
 
 Tells Patrol that your site is on maintenance mode and it should start routing traffic differently.
 
-Authorized users will see your site while unauthorized users will see either your offline page or an https response with a custom status code.
-
-#### `$maintenanceModeRedirectStatusCode`
-> Defaults to `302`
-
-Allows you to customize the status code when redirecting to your offline page during maintenance mode.
+Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
 
 #### `$maintenanceModeResponseStatusCode`
 > Defaults to `410`
 
 Tells Patrol what kind of `HttpException` to throw in the event that you chose not to use an offline page.
 
+#### `$maintenanceModeAuthorizedIps`
+> Defaults to `['::1', '127.0.0.1']`
+
+IP addresses that should be allowed during maintenance, even if they're not logged in.
+
+#### `$maintenanceModeAccessTokens`
+> Defaults to `[]`
+
+Access tokens that can be used to automatically add an IP to the allowed list.
+
+If had define an access token like so:
+```php
+$maintenanceModeAccessTokens =  [
+    'ceo-access-token',
+    'd0nn3bd8a2iza1ikjxxdo28iicabh7ts',
+];
+```
+
+We can send someone a link with the access token and when the visit that link, their IP will be added to the allowed list.
+
+- https://domain.com/?access=ceo-access-token
+- https://domain.com/?access=d0nn3bd8a2iza1ikjxxdo28iicabh7ts
+
+You can use any string as an access token but avoid using spaces.
+
+> If you are planning on using access tokens, do not include `$maintenanceModeAuthorizedIps` as a file config setting.
+
 ---
-
-## @Todo
-- Fix user permissions for permission based access
-- Add other validators for remaining settings
-- Review the way localized settings are being populated
-- Review `limitCpAccessTo` functionality
-- Review URL matching/parsing and redirects
-
-### Notes
-> Patrol will throw an `HttpException(403)` for unauthorized users during maintenance if you do not have an _offline page_ set up.
-
-> To force SSL everywhere (recommended practice), you can set `/` as the restricted area. If you only want to force SSL on the control panel, you could use `/admin` or `/{cpTrigger}`, the latter is recommended.
 
 ### Help & Feedback
 If you have questions, comments, or suggestions, feel free to reach out to me on twitter [@selvinortiz](https://twitter.com/selvinortiz)

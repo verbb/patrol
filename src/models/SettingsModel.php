@@ -90,14 +90,6 @@ class SettingsModel extends Model
     public $maintenanceModePageUrl = '/offline';
 
     /**
-     * Redirect status code to use when...
-     * 1. redirecting to your offline page
-     *
-     * @var int
-     */
-    public $maintenanceModelRedirectStatusCode = 302;
-
-    /**
      * Response status code to use when...
      * 1. there is no offline page set
      *
@@ -106,7 +98,8 @@ class SettingsModel extends Model
     public $maintenanceModeResponseStatusCode = 403;
 
     /**
-     * The IP addresses that should be allowed in during maintenance mode
+     * IP addresses that should be allowed during maintenance
+     * ...even if they're not logged in.
      *
      * @var array
      */
