@@ -63,7 +63,7 @@ return [
 
 ```
 
-### Config Legend
+### Config Settings
 
 #### `$primaryDomain`
 > Defaults to `null`
@@ -105,15 +105,15 @@ Tells Patrol that your site is on maintenance mode and it should start routing t
 
 Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
 
-#### `$maintenanceModeResponseStatusCode`
-> Defaults to `410`
-
-Tells Patrol what kind of `HttpException` to throw in the event that you chose not to use an offline page.
-
 #### `$maintenanceModeAuthorizedIps`
 > Defaults to `['::1', '127.0.0.1']`
 
 IP addresses that should be allowed during maintenance, even if they're not logged in.
+
+#### `$maintenanceModeResponseStatusCode`
+> Defaults to `410`
+
+Tells Patrol what kind of `HttpException` to throw in the event that you chose not to use an offline page.
 
 #### `$maintenanceModeAccessTokens`
 > Defaults to `[]`
