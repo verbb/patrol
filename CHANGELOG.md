@@ -9,7 +9,7 @@
 - Added the ability to send a custom HTTP response if no `offline` template is set
 
 ### Fixed
-- Fixed an issue wit improperly registered user permission for Patrol
+- Fixed an issue with improperly registered user permission for Patrol
 
 ### Updated
 - Updated config settings and APIs to align with Craft
