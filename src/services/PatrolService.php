@@ -81,7 +81,7 @@ class PatrolService extends Component
         $primaryDomain   = mb_strtolower(trim($this->settings->primaryDomain));
         $requestedDomain = mb_strtolower(trim(Craft::$app->request->getHostName()));
 
-        if ($primaryDomain === '*')
+        if (empty($primaryDomain) || $primaryDomain === '*')
         {
             return;
         }
@@ -91,15 +91,10 @@ class PatrolService extends Component
             return;
         }
 
-        $this->settings->sslRoutingBaseUrl = $primaryDomain;
-
-        $this->handleSslRouting();
-
         $http = Craft::$app->request->getIsSecureConnection() ? 'https://' : 'http://';
 
-        $url = $http.$primaryDomain.Craft::$app->request->getUrl();
-
-        Craft::$app->response->redirect($url, $this->settings->redirectStatusCode);
+        Craft::$app->request->setHostInfo($http.$primaryDomain);
+        Craft::$app->response->redirect(Craft::$app->request->getUrl(), $this->settings->redirectStatusCode);
     }
 
     /**
@@ -301,7 +296,7 @@ class PatrolService extends Component
             $this->runDefaultBehavior();
         }
 
-        Craft::$app->response->redirect($redirectTo, $this->settings->maintenanceModelPageStatusCode);
+        Craft::$app->response->redirect($redirectTo, $this->settings->redirectStatusCode);
     }
 
     /**

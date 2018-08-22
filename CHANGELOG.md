@@ -1,5 +1,18 @@
 # Patrol Changelog
-> Advanced Maintenance Mode & SSL Routing for [Craft CMS](http://craftcms.com)
+> Maintenance Mode & SSL Routing for [Craft 3](http://craftcms.com)
+
+## 3.1.0 - 2019-08-22
+### Added
+- Added the ability to configure the `redirect status code`
+- Added the ability to enforce a primary domain
+- Added the ability to use **access tokens** for dynamic IP whitelisting
+- Added the ability to send a custom HTTP response if no `offline` template is set
+
+### Fixed
+- Fixed an issue wit improperly registered user permission for Patrol
+
+### Updated
+- Updated config settings and APIs to align with Craft
 
 ## 3.0.2 - 2017-04-01
 ### Changed
