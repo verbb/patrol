@@ -1,6 +1,14 @@
 # Patrol Changelog
 > Maintenance Mode & SSL Routing for [Craft 3](http://craftcms.com)
 
+## 3.1.1 - 2019-08-25
+### Fixed
+- Fixed typo in previous CHANGELOG entry
+- Fixed an issue with plugin store versioning (maybe)
+
+### Updated
+- Updated composer dependencies
+
 ## 3.1.0 - 2019-08-22
 ### Added
 - Added the ability to configure the `redirect status code`
