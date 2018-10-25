@@ -181,7 +181,7 @@ class PatrolService extends Component
 
         if (empty($baseUrl) || $baseUrl == '/')
         {
-            $baseUrl = Craft::$app->request->serverName;
+            $baseUrl = Craft::$app->request->hostInfo;
             // Ensure trailing slash
             $baseUrl = '/'.ltrim($baseUrl, '/');
         }

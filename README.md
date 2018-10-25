@@ -39,6 +39,7 @@ return [
         'primaryDomain' => null,
         'redirectStatusCode' => 302,
 
+        'sslRoutingBaseUrl' => "https://mysecuredwebsite.com",
         'sslRoutingEnabled' => true,
         'sslRoutingRestrictedUrls' => ['/'],
 
@@ -86,6 +87,10 @@ Redirect status code to use when...
 1. redirecting to and from SSL restricted URLs
 2. redirecting to primary domain, if one is defined.
 
+#### `$sslRoutingBaseUrl`
+> Defaults to `Craft::$app->request->hostInfo`
+
+Tells Patrol what base URL to use when redirecting to SSL
 
 #### `$sslRoutingEnabled`
 > Defaults to `false`
