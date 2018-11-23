@@ -277,13 +277,28 @@ class PatrolService extends Component
     }
 
     /**
-     * Ensures that we get the right IP address even if behind CloudFlare
+     * Ensures that we get the right IP address even if behind CloudFlare or most proxies
      *
      * @return string
      */
     public function getRequestingIp()
     {
-        return isset($_SERVER['HTTP_CF_CONNECTING_IP']) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $_SERVER['REMOTE_ADDR'];
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+
+            return $_SERVER['HTTP_CF_CONNECTING_IP'];
+        }
+        elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
+            return isset($_SERVER['HTTP_X_FORWARDED_FOR']);
+        }
+        elseif (isset($_SERVER['HTTP_X_REAL_IP']))
+        {
+            return isset($_SERVER['HTTP_X_REAL_IP']);
+        }
+        else
+        {
+            return $_SERVER['REMOTE_ADDR'];
+        }
     }
 
     /**
