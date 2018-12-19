@@ -1,10 +1,16 @@
 # Patrol Changelog
 > Maintenance Mode & SSL Routing for [Craft 3](http://craftcms.com)
 
+## 3.1.3 - 2019-12-19
+### Fixed
+- Fixed issue [#16] where `sslRoutingBaseUrl` was causing issue when set to `empty` or `/`
+
+[#16]: https://github.com/selvinortiz/craft-plugin-patrol/issues/16
+
 ## 3.1.2 - 2019-11-23
 ### Fixed
 - Fixed issue [#12] where the requesting IP could not be determined if behind some proxies
-- Fixed critical issue where Patrol would explode on sites without a proper baseUrl set
+- Fixed critical issue where Patrol would explode on sites without a proper `baseUrl` set
 
 [#12]: https://github.com/selvinortiz/craft-plugin-patrol/issues/12
 
