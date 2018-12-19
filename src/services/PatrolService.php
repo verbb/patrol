@@ -172,22 +172,35 @@ class PatrolService extends Component
      */
     protected function forceSsl()
     {
-        $baseUrl = Craft::$app->view->renderObjectTemplate(
-            $this->settings->sslRoutingBaseUrl,
-            $this->getDynamicParams()
-        );
+        // Define and trim base URL
+        $baseUrl = trim($this->settings->sslRoutingBaseUrl);
 
-        $baseUrl = trim($baseUrl);
-
-        if (empty($baseUrl) || $baseUrl == '/')
+        // Parse dynamic params in SSL routing URL
+        if (mb_stripos($baseUrl, '{') !== false)
         {
-            $baseUrl = Craft::$app->request->hostInfo;
-            // Ensure trailing slash
-            $baseUrl = '/'.ltrim($baseUrl, '/');
+            $baseUrl = Craft::$app->view->renderObjectTemplate(
+                $this->settings->sslRoutingBaseUrl,
+                $this->getDynamicParams()
+            );
         }
 
-        $url = sprintf('%s%s', $baseUrl, ltrim(Craft::$app->request->getUrl(), '/')); // http://domain.com/page?query=something
-        $url = str_replace('http:', 'https:', $url);                                  // https://domain.com/page?query=something
+        // Protect against invalid base URL
+        if (empty($baseUrl) || $baseUrl == '/')
+        {
+            $baseUrl = trim(Craft::$app->request->hostInfo);
+        }
+
+        // Define and trim URI to append to the base URL
+        $requestUri = trim(Craft::$app->request->getUrl());
+
+        // Base URL should now be set to 'http://domain.ext' or 'http://domain.ext/'
+        // Request URI can could be empty or '/page?key=val'
+
+        // Define the final URL formed by the host portion and the URI portion
+        $url = sprintf('%s%s', rtrim($baseUrl, '/'), $requestUri);
+
+        // Ensure https is used
+        $url = str_replace('http:', 'https:', $url);
 
         if (!filter_var($url, FILTER_VALIDATE_URL))
         {
