@@ -2,11 +2,11 @@
 ![Patrol](resources/img/Patrol3.png)
 
 # Patrol 3
-Maintenance Mode and SSL Routing for [Craft 3][craft]
+Easy Maintenance Mode and Smart HTTPS Routing
 
 ## Features 🚀
 
-### SSL Routing 👮‍
+### HTTPS Routing 👮‍
 - Force HTTPS (server agnostic)
 - Force a Primary Domain (naked domain vs www prefixed)
 - Define where HTTPS is enforced (if not globally)
