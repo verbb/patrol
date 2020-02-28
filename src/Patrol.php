@@ -9,7 +9,7 @@ use craft\helpers\Template;
 
 use craft\services\UserPermissions;
 use craft\events\RegisterUserPermissionsEvent;
-
+use craft\web\Application;
 use selvinortiz\patrol\models\SettingsModel;
 use selvinortiz\patrol\services\PatrolService;
 use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
@@ -41,11 +41,14 @@ class Patrol extends Plugin
     {
         parent::init();
 
-        if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isLivePreview)
+        Craft::$app->on(Application::EVENT_INIT, function()
         {
-            $this->defaultService->allow();
-            $this->defaultService->watch();
-        }
+            if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isLivePreview)
+            {
+                $this->defaultService->allow();
+                $this->defaultService->watch();
+            }
+        });
 
         Event::on(
             UserPermissions::class,
