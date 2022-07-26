@@ -22,8 +22,8 @@ class Patrol extends Plugin
     // Properties
     // =========================================================================
 
-    public $schemaVersion = '3.0.0';
-    public $hasCpSettings = true;
+    public string $schemaVersion = '3.0.0';
+    public bool $hasCpSettings = true;
 
 
     // Traits
@@ -54,9 +54,9 @@ class Patrol extends Plugin
         return Craft::t('patrol', 'Patrol');
     }
 
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
-        Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('patrol/settings'));
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('patrol/settings'));
     }
 
 

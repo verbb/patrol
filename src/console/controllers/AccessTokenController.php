@@ -1,5 +1,5 @@
 <?php
-namespace verbb\patrol\controllers;
+namespace verbb\patrol\console\controllers;
 
 use craft\helpers\StringHelper;
 
@@ -7,7 +7,7 @@ use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\Console;
 
-class AccessTokenController extends controller
+class AccessTokenController extends Controller
 {
     // Properties
     // =========================================================================

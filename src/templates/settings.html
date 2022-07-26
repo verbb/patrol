@@ -23,7 +23,7 @@
     instructions: 'Whether maintenance mode should be enabled.' | t('patrol'),
     name: 'maintenanceModeEnabled',
     on: settings.maintenanceModeEnabled,
-    errors: settings.getError('maintenanceModeEnabled'),
+    errors: settings.getErrors('maintenanceModeEnabled'),
 }) }}
 
 {{ forms.textField({
@@ -33,7 +33,7 @@
     class: 'code',
     placeholder: '/maintenance',
     value: settings.maintenanceModePageUrl,
-    errors: settings.getError('maintenanceModePageUrl'),
+    errors: settings.getErrors('maintenanceModePageUrl'),
 }) }}
 
 {{ forms.textareaField({
@@ -42,7 +42,7 @@
     name: 'maintenanceModeAuthorizedIps',
     rows: 10,
     value: settings.getMaintenanceModeAuthorizedIps(),
-    errors: settings.getError('maintenanceModeAuthorizedIps'),
+    errors: settings.getErrors('maintenanceModeAuthorizedIps'),
 }) }}
 
 <hr>
@@ -54,7 +54,7 @@
     instructions: 'Whether SSL routing and force HTTPS should be enabled.' | t('patrol'),
     name: 'sslRoutingEnabled',
     on: settings.sslRoutingEnabled,
-    errors: settings.getError('sslRoutingEnabled'),
+    errors: settings.getErrors('sslRoutingEnabled'),
 }) }}
 
 {{ forms.textareaField({
@@ -63,7 +63,7 @@
     name: 'sslRoutingRestrictedUrls',
     rows: 10,
     value: settings.getSslRoutingRestrictedUrls(),
-    errors: settings.getError('sslRoutingRestrictedUrls'),
+    errors: settings.getErrors('sslRoutingRestrictedUrls'),
 }) }}
     
 {% endnamespace %}

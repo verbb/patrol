@@ -8,7 +8,7 @@ class PatrolVariable
     // Public Methods
     // =========================================================================
 
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return Patrol::$plugin->getPluginName();
     }

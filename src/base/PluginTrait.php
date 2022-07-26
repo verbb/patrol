@@ -1,6 +1,7 @@
 <?php
 namespace verbb\patrol\base;
 
+use verbb\patrol\Patrol;
 use verbb\patrol\services\Service;
 
 use Craft;
@@ -14,7 +15,7 @@ trait PluginTrait
     // Static Properties
     // =========================================================================
 
-    public static $plugin;
+    public static Patrol $plugin;
 
 
     // Public Methods

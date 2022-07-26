@@ -20,12 +20,7 @@ class Service extends Component
     // Properties
     // =========================================================================
 
-    /**
-     * Key/value pairs used when parsing restricted areas like {cpTrigger}
-     *
-     * @var array
-     */
-    protected $dynamicParams;
+    protected array $dynamicParams = [];
 
 
     // Public Methods
