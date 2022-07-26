@@ -17,9 +17,10 @@
 {% namespace 'settings' %}
 
 <h2 class="first">{{ 'Maintenance Mode' | t('patrol') }}</h2>
-<p>{{ 'Enable maintenance mode and use the rules defined below.' | t('patrol') }}</p>
 
-{{ forms.lightswitch({
+{{ forms.lightswitchField({
+    label: 'Enable Maintenance Mode' | t('patrol'),
+    instructions: 'Whether maintenance mode should be enabled.' | t('patrol'),
     name: 'maintenanceModeEnabled',
     on: settings.maintenanceModeEnabled,
     errors: settings.getError('maintenanceModeEnabled'),
@@ -47,11 +48,13 @@
 <hr>
 
 <h2>{{ 'SSL Routing' | t('patrol') }}</h2>
-<p>{{ 'Enable SSL routing and force HTTPS using the rules defined below.' | t('patrol') }}</p>
 
-{{ forms.lightswitch({
+{{ forms.lightswitchField({
+    label: 'SSL Routing' | t('patrol'),
+    instructions: 'Whether SSL routing and force HTTPS should be enabled.' | t('patrol'),
     name: 'sslRoutingEnabled',
     on: settings.sslRoutingEnabled,
+    errors: settings.getError('sslRoutingEnabled'),
 }) }}
 
 {{ forms.textareaField({
