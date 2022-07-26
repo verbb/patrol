@@ -282,11 +282,11 @@ class Service extends Component
         }
 
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return isset($_SERVER['HTTP_X_FORWARDED_FOR']);
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
 
         if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-            return isset($_SERVER['HTTP_X_REAL_IP']);
+            return $_SERVER['HTTP_X_REAL_IP'];
         }
 
         return $_SERVER['REMOTE_ADDR'];
