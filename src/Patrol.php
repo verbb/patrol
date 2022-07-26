@@ -1,113 +1,113 @@
 <?php
-namespace selvinortiz\patrol;
+namespace verbb\patrol;
 
-use yii\base\Event;
+use verbb\patrol\base\PluginTrait;
+use verbb\patrol\models\Settings;
+use verbb\patrol\variables\PatrolVariable;
 
 use Craft;
 use craft\base\Plugin;
-use craft\helpers\Template;
-
-use craft\services\UserPermissions;
 use craft\events\RegisterUserPermissionsEvent;
-use craft\web\Application;
-use selvinortiz\patrol\models\SettingsModel;
-use selvinortiz\patrol\services\PatrolService;
-use selvinortiz\patrol\assetbundles\plugin\PatrolPluginAssetBundle;
+use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\UrlHelper;
+use craft\services\Plugins;
+use craft\services\UserPermissions;
+use craft\web\UrlManager;
+use craft\web\twig\variables\CraftVariable;
 
-/**
- * Class Plugin
- *
- * @package selvinortiz\patrol
- * @author  Selvin Ortiz <selvin@selvin.co>
- * @since   3.0
- *
- * @property PatrolService $defaultService The default service instance
- */
+use yii\base\Event;
+
 class Patrol extends Plugin
 {
-    const MAINTENANCE_MODE_BYPASS_PERMISSION = 'patrolMaintenanceModeBypass';
+    // Properties
+    // =========================================================================
 
-    public $hasCpSection = true;
+    public $schemaVersion = '3.0.0';
+    public $hasCpSettings = true;
 
-    public $controllerNamespace = 'selvinortiz\\patrol\\controllers';
 
-    /**
-     * @throws \yii\base\ErrorException
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\web\HttpException
-     */
-    public function init()
+    // Traits
+    // =========================================================================
+
+    use PluginTrait;
+
+
+    // Public Methods
+    // =========================================================================
+
+    public function init(): void
     {
         parent::init();
 
-        Craft::$app->on(Application::EVENT_INIT, function()
-        {
-            if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isLivePreview)
-            {
-                $this->defaultService->allow();
-                $this->defaultService->watch();
-            }
+        self::$plugin = $this;
+
+        $this->_setPluginComponents();
+        $this->_setLogging();
+        $this->_registerCpRoutes();
+        $this->_registerVariables();
+        $this->_registerCraftEventListeners();
+        $this->_registerPermissions();
+    }
+
+    public function getPluginName(): string
+    {
+        return Craft::t('patrol', 'Patrol');
+    }
+
+    public function getSettingsResponse()
+    {
+        Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('patrol/settings'));
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function createSettingsModel(): Settings
+    {
+        return new Settings();
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private function _registerCpRoutes(): void
+    {
+        Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
+            $event->rules = array_merge($event->rules, [
+                'patrol/settings' => 'patrol/base/settings',
+            ]);
         });
+    }
 
-        Event::on(
-            UserPermissions::class,
-            UserPermissions::EVENT_REGISTER_PERMISSIONS,
-            function(RegisterUserPermissionsEvent $event)
-            {
-                $section = \Craft::t('patrol', 'Patrol');
+    private function _registerVariables(): void
+    {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+            $event->sender->set('patrol', PatrolVariable::class);
+        });
+    }
 
-                $event->permissions[$section] = $this->getPermissionsToRegister();
+    private function _registerCraftEventListeners(): void
+    {
+        Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function(Event $event) {
+            $request = Craft::$app->getRequest();
+
+            if ($request->getIsConsoleRequest() || ($request->getIsLivePreview() || $request->getIsPreview())) {
+                return;
             }
-        );
+
+            Patrol::$plugin->getService()->allow();
+            Patrol::$plugin->getService()->watch();
+        });
     }
 
-    /**
-     * Returns settings model with custom properties
-     *
-     * @return SettingsModel
-     */
-    public function createSettingsModel()
+    private function _registerPermissions(): void
     {
-        return new SettingsModel();
-    }
-
-    /**
-     * Returns rendered settings UI as a twig markup object
-     *
-     * @return \Twig_Markup
-     * @throws \Twig_Error_Loader
-     * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function settingsHtml()
-    {
-        Craft::$app->view->registerAssetBundle(PatrolPluginAssetBundle::class);
-
-        /**
-         * @var SettingsModel $settings
-         */
-        $settings  = $this->getSettings();
-        $variables = [
-            'plugin'       => $this,
-            'settings'     => $settings,
-            'settingsJson' => $settings->getJsonObject(),
-        ];
-
-        $html = Craft::$app->view->renderTemplate('patrol/_settings', $variables);
-
-        return Template::raw($html);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getPermissionsToRegister()
-    {
-        return [
-            static::MAINTENANCE_MODE_BYPASS_PERMISSION => [
-                'label' => Craft::t('patrol', 'Access the site when maintenance mode is enabled'),
-            ],
-        ];
+        Event::on(UserPermissions::class, UserPermissions::EVENT_REGISTER_PERMISSIONS, function(RegisterUserPermissionsEvent $event) {
+            $event->permissions[Craft::t('patrol', 'Patrol')] = [
+                'patrolMaintenanceModeBypass' => ['label' => Craft::t('patrol', 'Access the site when maintenance mode is enabled')],
+            ];
+        });
     }
 }

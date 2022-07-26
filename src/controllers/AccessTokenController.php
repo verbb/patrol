@@ -1,22 +1,27 @@
 <?php
-namespace selvinortiz\patrol\controllers;
+namespace verbb\patrol\controllers;
+
+use craft\helpers\StringHelper;
 
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\Console;
 
-use Craft;
-use craft\helpers\UrlHelper;
-use craft\helpers\StringHelper;
-
 class AccessTokenController extends controller
 {
+    // Properties
+    // =========================================================================
+
     public $defaultAction = 'generate';
+
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Generate a new access token for dynamic IP authorization
      */
-    public function actionGenerate()
+    public function actionGenerate(): int
     {
         $access = mb_strtolower(StringHelper::randomString(32));
 
@@ -25,8 +30,12 @@ class AccessTokenController extends controller
         return ExitCode::OK;
     }
 
-    private function line($text = '', $color = null)
+
+    // Private Methods
+    // =========================================================================
+
+    private function line($text = '', $color = null): void
     {
-        $this->stdout($text.PHP_EOL, $color);
+        $this->stdout($text . PHP_EOL, $color);
     }
 }

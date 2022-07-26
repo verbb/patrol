@@ -1,28 +1,27 @@
 <?php
-namespace selvinortiz\patrol\validators;
+namespace verbb\patrol\validators;
 
+use yii\base\Model;
 use yii\validators\Validator;
 
-/**
- * Class RestrictedUrl
- *
- * @package selvinortiz\patrol\validators
- */
 class RestrictedUrl extends Validator
 {
+    // Public Methods
+    // =========================================================================
+
     /**
-     * @param \yii\base\Model $model
-     * @param string          $attribute
+     * @param Model $model
+     * @param string $attribute
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->{$attribute};
 
-        if (! is_array($value))
-        {
+        if (!is_array($value)) {
             $value = [];
         }
 
+        // Ensure unique, non-empty values, indexed from zero
         $value = array_values(array_unique(array_filter($value)));
 
         $model->{$attribute} = empty($value) ? [] : $value;

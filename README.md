@@ -1,10 +1,7 @@
+# Patrol plugin for Craft CMS
+Easy Maintenance Mode and Smart HTTPS Routing.
 
-![Patrol](resources/img/Patrol3.png)
-
-# Patrol 3
-Easy Maintenance Mode and Smart HTTPS Routing
-
-## Features 🚀
+## Features
 
 ### HTTPS Routing 👮‍
 - Force HTTPS (server agnostic)
@@ -12,26 +9,32 @@ Easy Maintenance Mode and Smart HTTPS Routing
 - Define where HTTPS is enforced (if not globally)
 - Control the best redirect status code for your use case
 
-#### Maintenance Mode 🚧
+### Maintenance Mode 🚧
 - Put your site on maintenance mode
 - Define who can access the site while offline
 - Reroute guests to an offline page (or custom response)
 
----
+## Installation
+You can install Patrol via the plugin store, or through Composer.
 
-## Install
-```bash
-composer require selvinortiz/patrol
+### Craft Plugin Store
+To install **Patrol**, navigate to the _Plugin Store_ section of your Craft control panel, search for `Patrol`, and click the _Try_ button.
 
-./craft install/plugin patrol
-```
+### Composer
+You can also add the package to your project using Composer.
 
-...or you can search for Patrol in the Plugin Store.
+1. Open your terminal and go to your Craft project:
 
----
+        cd /path/to/project
 
-## Configure
-You can configure some stuff through the control panel, but doing so is not recommended. File configs are much more flexible and you can define different configs for different environments.
+2. Then tell Composer to load the plugin:
+    
+        composer require verbb/patrol
+
+3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Patrol.
+
+## Configuring Patrol
+The plugin is configured in the `config/` directory in a file you create called `patrol.php`. What follows is an example of what it might contain.
 
 ```php
 return [
@@ -60,71 +63,22 @@ return [
         'maintenanceModeResponseStatusCode' => 503,
     ]
 ];
-
 ```
 
-### Config Settings
+## Configuration Options
+- `primaryDomain` - Primary domain to enforce.
+- `redirectStatusCode` - Redirect status code to use when redirecting.
+- `sslRoutingBaseUrl` - Tells Patrol what base URL to use when redirecting to SSL.
+- `sslRoutingEnabled` - Tells Patrol to force requests to be made over `https://`.
+- `sslRoutingRestrictedUrls` - Tells Patrol **where** `https://` should be enforced.
+- `maintenanceModeEnabled` - Tells Patrol that your site is on maintenance mode and it should start routing traffic differently. Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
+- `maintenanceModeAuthorizedIps` - IP addresses that should be allowed (without being logged in) during maintenance.
+- `maintenanceModeResponseStatusCode` - Tells Patrol what kind of `HttpException` to throw if you do not set a `$maintenanceModePageUrl`.
+- `maintenanceModeAccessTokens` - Access tokens that can be used to automatically add an IP to the allowed list.
 
-#### `$primaryDomain`
-> Defaults to `null`
-
-Primary domain to enforce
-
-If your site is accessible via multiple domains,
-you may want to ensure that it can only be accessed by the primary domain.
-
-**Example**
-- domain.frb.io (App URL)
-- www.domain.com (Secondary)
-- domain.com (Primary)
-
-If a user requests `www.domain.com` or `domain.frb.io`, they will be redirected to `domain.com`
-
-#### `$redirectStatusCode`
-> Defaults to `302`
-
-Redirect status code to use when...
-1. redirecting to and from SSL restricted URLs
-2. redirecting to primary domain, if one is defined.
-
-#### `$sslRoutingBaseUrl`
-> Defaults to `Craft::$app->request->hostInfo`
-
-Tells Patrol what base URL to use when redirecting to SSL
-
-#### `$sslRoutingEnabled`
-> Defaults to `false`
-
-Tells Patrol to force requests to be made over `https://`
-
-#### `$sslRoutingRestrictedUrls`
-> Defaults to `['/']` (everything)
-
-Tells Patrol **where** `https://` should be enforced.
-
-#### `$maintenanceModeEnabled`
-> Defaults to `false`
-
-Tells Patrol that your site is on maintenance mode and it should start routing traffic differently.
-
-Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
-
-#### `$maintenanceModeAuthorizedIps`
-> Defaults to `['::1', '127.0.0.1']`
-
-IP addresses that should be allowed (without being logged in) during maintenance.
-
-#### `$maintenanceModeResponseStatusCode`
-> Defaults to `410`
-
-Tells Patrol what kind of `HttpException` to throw if you do not set a `$maintenanceModePageUrl`.
-
-#### `$maintenanceModeAccessTokens`
-> Defaults to `[]`
-
-Access tokens that can be used to automatically add an IP to the allowed list.
-
+### Access Tokens
 If you define the following access tokens:
+
 ```php
 $maintenanceModeAccessTokens =  [
     'ceo-access-token',
@@ -141,20 +95,19 @@ You can use any string as an access token but avoid using spaces.
 
 > If you are planning on using access tokens, do not include `$maintenanceModeAuthorizedIps` as a file config setting.
 
----
+## Credits
+Originally created by [Selvin Ortiz](https://github.com/selvindev).
 
-### Help & Feedback
-If you have questions, comments, or suggestions, feel free to reach out to me on twitter [@selvinortiz](https://twitter.com/selvinortiz)
+## Show your Support
+Patrol is licensed under the MIT license, meaning it will always be free and open source – we love free stuff! If you'd like to show your support to the plugin regardless, [Sponsor](https://github.com/sponsors/verbb) development.
 
-## License
-**Patrol** for [Craft CMS][craft] is open source software
+<h2></h2>
 
-[MIT License][mit]
+<a href="https://verbb.io" target="_blank">
+    <img width="100" src="https://verbb.io/assets/img/verbb-pill.svg">
+</a>
 
-![osi]
 
-[me]:https://selvinortiz.com "Selvin Ortiz"
-[mit]:http://opensource.org/licenses/MIT "MIT License"
-[osi]:resources/img/osilogo.png "Open Source Initiative"
-[love]:resources/img/love.png "Love"
-[craft]:http://craftcms.com "Craft 3"
+
+
+

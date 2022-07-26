@@ -1,0 +1,68 @@
+{% extends 'patrol/_layouts' %}
+{% import '_includes/forms' as forms %}
+
+{% set crumbs = [
+    { label: 'Patrol' | t('patrol'), url: url('patrol/settings') },
+    { label: 'Settings' | t('app'), url: url('patrol/settings') }
+] %}
+
+{% set selectedTab = 'settings' %}
+{% set fullPageForm = true %}
+
+{% block blockContent %}
+
+<input type="hidden" name="action" value="plugins/save-plugin-settings">
+<input type="hidden" name="pluginHandle" value="patrol">
+
+{% namespace 'settings' %}
+
+<h2 class="first">{{ 'Maintenance Mode' | t('patrol') }}</h2>
+<p>{{ 'Enable maintenance mode and use the rules defined below.' | t('patrol') }}</p>
+
+{{ forms.lightswitch({
+    name: 'maintenanceModeEnabled',
+    on: settings.maintenanceModeEnabled,
+    errors: settings.getError('maintenanceModeEnabled'),
+}) }}
+
+{{ forms.textField({
+    label: 'Maintenance Mode Page URL' | t('patrol'),
+    instructions: 'The URL to redirect unauthorized traffic to if maintenance mode is enabled.' | t('patrol'),
+    name: 'maintenanceModePageUrl',
+    class: 'code',
+    placeholder: '/maintenance',
+    value: settings.maintenanceModePageUrl,
+    errors: settings.getError('maintenanceModePageUrl'),
+}) }}
+
+{{ forms.textareaField({
+    label: 'Authorized IPs' | t('patrol'),
+    instructions: 'The IP addresses that should be able to access the site on maintenance mode. Enter an IP per-line.' | t('patrol'),
+    name: 'maintenanceModeAuthorizedIps',
+    rows: 10,
+    value: settings.getMaintenanceModeAuthorizedIps(),
+    errors: settings.getError('maintenanceModeAuthorizedIps'),
+}) }}
+
+<hr>
+
+<h2>{{ 'SSL Routing' | t('patrol') }}</h2>
+<p>{{ 'Enable SSL routing and force HTTPS using the rules defined below.' | t('patrol') }}</p>
+
+{{ forms.lightswitch({
+    name: 'sslRoutingEnabled',
+    on: settings.sslRoutingEnabled,
+}) }}
+
+{{ forms.textareaField({
+    label: 'Restricted URL Segments' | t('patrol'),
+    instructions: 'The URL segments where HTTPS should be enforced. Enter a URL per-line.' | t('patrol'),
+    name: 'sslRoutingRestrictedUrls',
+    rows: 10,
+    value: settings.getSslRoutingRestrictedUrls(),
+    errors: settings.getError('sslRoutingRestrictedUrls'),
+}) }}
+    
+{% endnamespace %}
+
+{% endblock %}

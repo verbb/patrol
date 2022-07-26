@@ -1,43 +1,46 @@
 {
-    "name": "selvinortiz/patrol",
+    "name": "verbb/patrol",
     "description": "Easy Maintenance Mode and Smart HTTPS Routing",
-    "version": "3.1.3",
     "type": "craft-plugin",
+    "version": "4.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "patrol"
+    ],
+    "support": {
+        "email": "support@verbb.io",
+        "issues": "https://github.com/verbb/patrol/issues?state=open",
+        "source": "https://github.com/verbb/patrol",
+        "docs": "https://github.com/verbb/patrol",
+        "rss": "https://github.com/verbb/patrol/commits/v2.atom"
+    },
     "license": "MIT",
     "authors": [
+        {
+            "name": "Verbb",
+            "homepage": "https://verbb.io"
+        },
         {
             "name": "Selvin Ortiz",
             "email": "selvin@selvin.co"
         }
     ],
+    "require": {
+        "craftcms/cms": "^3.7.0",
+        "verbb/base": "^1.0.2"
+    },
     "autoload": {
         "psr-4": {
-            "selvinortiz\\patrol\\": "src/"
+            "verbb\\patrol\\": "src/"
         }
     },
-    "keywords": [
-        "craft",
-        "craftcms",
-        "plugin",
-        "patrol"
-    ],
     "extra": {
         "name": "Patrol",
-        "class": "selvinortiz\\patrol\\Patrol",
         "handle": "patrol",
-        "version": "3.1.3",
-        "schemaVersion": "3.0.0",
-        "developer": "Selvin Ortiz",
-        "developerUrl": "https://selvinortiz.com",
-        "description": "Maintenance Mode & SSL Routing for Craft 3",
-        "documentationUrl": "https://github.com/selvinortiz/patrol/blob/master/README.md",
-        "changelogUrl": "https://raw.githubusercontent.com/selvinortiz/patrol/CHANGELOG.md",
-        "hasCpSettings": true,
-        "components": {
-            "defaultService": "selvinortiz\\patrol\\services\\PatrolService"
-        }
-    },
-    "require": {
-        "craftcms/cms": "^3.0"
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/patrol/craft-3/CHANGELOG.md",
+        "class": "verbb\\patrol\\Patrol"
     }
 }

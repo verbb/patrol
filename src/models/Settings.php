@@ -1,15 +1,16 @@
 <?php
-namespace selvinortiz\patrol\models;
+namespace verbb\patrol\models;
+
+use verbb\patrol\validators\AuthorizedIp;
+use verbb\patrol\validators\RestrictedUrl;
 
 use craft\base\Model;
 
-/**
- * Class SettingsModel
- *
- * @package selvinortiz\patrol
- */
-class SettingsModel extends Model
+class Settings extends Model
 {
+    // Properties
+    // =========================================================================
+
     /**
      * Primary domain to enforce
      *
@@ -20,7 +21,7 @@ class SettingsModel extends Model
      * - domain.com (Primary)
      * - www.domain.com
      *
-     * Anytime www.domain.com/page is requested..
+     * Anytime www.domain.com/page is requested.
      * a redirect to domain.com/page will be performed
      *
      * @var string
@@ -37,7 +38,7 @@ class SettingsModel extends Model
     public $redirectStatusCode = 302;
 
     /**
-     * Whether or not SSL routing should be enabled
+     * Whether SSL routing should be enabled
      *
      * @var bool
      */
@@ -61,10 +62,10 @@ class SettingsModel extends Model
      *
      * @var array
      */
-    public $sslRoutingRestrictedUrls = ['/'];
+    public array $sslRoutingRestrictedUrls = ['/'];
 
     /**
-     * Whether or not maintenance mode is enabled
+     * Whether maintenance mode is enabled
      *
      * If maintenance mode is enabled...
      * - unauthorized users will be routed to your offline page
@@ -103,9 +104,9 @@ class SettingsModel extends Model
      *
      * @var array
      */
-    public $maintenanceModeAuthorizedIps = [
+    public array $maintenanceModeAuthorizedIps = [
         '::1',
-        '127.0.0.1'
+        '127.0.0.1',
     ];
 
     /**
@@ -118,31 +119,66 @@ class SettingsModel extends Model
      */
     public $limitCpAccessTo = [];
 
+
+    // Public Methods
+    // =========================================================================
+
     /**
      * @return array
      */
-    public function rules()
+    public function defineRules(): array
     {
-        $rules = [
-            ['sslRoutingRestrictedUrls', 'selvinortiz\\patrol\\validators\\RestrictedUrl'],
-            ['maintenanceModeAuthorizedIps', 'selvinortiz\\patrol\\validators\\AuthorizedIp'],
-        ];
+        $rules = parent::defineRules();
 
-        return array_merge(parent::rules(), $rules);
+        $rules[] = ['sslRoutingRestrictedUrls', RestrictedUrl::class];
+        $rules[] = ['maintenanceModeAuthorizedIps', AuthorizedIp::class];
+
+        return $rules;
     }
 
-    /**
-     * Returns all properties and their values in JSON format
-     *
-     * @return string
-     */
-    public function getJsonObject()
+    public function getMaintenanceModeAuthorizedIps(): string
     {
-        // array_filter() ensures that empty values are filtered out
-        // array_values() ensures encoding to array rather than object
-        $this->sslRoutingRestrictedUrls     = array_values(array_filter($this->sslRoutingRestrictedUrls));
-        $this->maintenanceModeAuthorizedIps = array_values(array_filter($this->maintenanceModeAuthorizedIps));
+        return $this->_getMultilineFromArray($this->maintenanceModeAuthorizedIps);
+    }
 
-        return json_encode(get_object_vars($this));
+    public function getSslRoutingRestrictedUrls(): string
+    {
+        return $this->_getMultilineFromArray($this->sslRoutingRestrictedUrls);
+    }
+
+    public function setAttributes($values, $safeOnly = true): void
+    {
+        // Normalize array data set using a textarea
+        $maintenanceModeAuthorizedIps = $values['maintenanceModeAuthorizedIps'] ?? '';
+        $sslRoutingRestrictedUrls = $values['sslRoutingRestrictedUrls'] ?? '';
+
+        $values['maintenanceModeAuthorizedIps'] = $this->_getArrayFromMultiline($maintenanceModeAuthorizedIps);
+        $values['sslRoutingRestrictedUrls'] = $this->_getArrayFromMultiline($sslRoutingRestrictedUrls);
+
+        parent::setAttributes($values, $safeOnly);
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private function _getMultilineFromArray($value): string
+    {
+        return implode(PHP_EOL, $value);
+    }
+
+    private function _getArrayFromMultiline($value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        $array = [];
+
+        if ($value) {
+            $array = array_map('trim', explode(PHP_EOL, $value));
+        }
+
+        return $array;
     }
 }
