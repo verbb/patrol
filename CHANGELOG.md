@@ -5,6 +5,8 @@
 ### Changed
 - Now requires PHP `8.0.2+`.
 - Now requires Craft `4.0.0+`.
+- Renamed `verbb\patrol\models\SettingsModel` to `verbb\patrol\models\Settings`.
+- Renamed `verbb\patrol\services\PatrolService` to `verbb\patrol\services\Service`.
 
 ## 4.0.1 - 2022-07-26
 
