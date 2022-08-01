@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.1 - 2022-08-01
+
+### Fixed
+- Fix an error with permissions definitions.
+
 ## 5.0.0 - 2022-07-26
 
 ### Changed

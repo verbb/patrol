@@ -2,7 +2,7 @@
     "name": "verbb/patrol",
     "description": "Easy Maintenance Mode and Smart HTTPS Routing",
     "type": "craft-plugin",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "keywords": [
         "craft",
         "cms",
