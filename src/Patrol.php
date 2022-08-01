@@ -105,8 +105,11 @@ class Patrol extends Plugin
     private function _registerPermissions(): void
     {
         Event::on(UserPermissions::class, UserPermissions::EVENT_REGISTER_PERMISSIONS, function(RegisterUserPermissionsEvent $event) {
-            $event->permissions[Craft::t('patrol', 'Patrol')] = [
-                'patrolMaintenanceModeBypass' => ['label' => Craft::t('patrol', 'Access the site when maintenance mode is enabled')],
+            $event->permissions[] = [
+                'heading' => Craft::t('patrol', 'Patrol'),
+                'permissions' => [
+                    'patrolMaintenanceModeBypass' => ['label' => Craft::t('patrol', 'Access the site when maintenance mode is enabled')],
+                ],
             ];
         });
     }
