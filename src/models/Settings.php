@@ -62,7 +62,7 @@ class Settings extends Model
      *
      * @var array
      */
-    public array $sslRoutingRestrictedUrls = ['/'];
+    public $sslRoutingRestrictedUrls = ['/'];
 
     /**
      * Whether maintenance mode is enabled
@@ -104,7 +104,7 @@ class Settings extends Model
      *
      * @var array
      */
-    public array $maintenanceModeAuthorizedIps = [
+    public $maintenanceModeAuthorizedIps = [
         '::1',
         '127.0.0.1',
     ];
