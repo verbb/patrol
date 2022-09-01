@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.2 - 2022-09-01
+
+### Fixed
+- Fix a PHP typing error for settings.
+
 ## 4.0.1 - 2022-07-26
 
 ### Fixed
