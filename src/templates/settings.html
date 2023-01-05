@@ -1,5 +1,8 @@
 {% extends 'patrol/_layouts' %}
+
 {% import '_includes/forms' as forms %}
+
+{% requireAdmin %}
 
 {% set crumbs = [
     { label: 'Patrol' | t('patrol'), url: url('patrol/settings') },
