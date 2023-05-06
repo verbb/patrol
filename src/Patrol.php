@@ -12,6 +12,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
 use craft\services\Plugins;
 use craft\services\UserPermissions;
+use craft\web\Application;
 use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
 
@@ -90,7 +91,7 @@ class Patrol extends Plugin
 
     private function _registerCraftEventListeners(): void
     {
-        Event::on(Plugins::class, Plugins::EVENT_AFTER_LOAD_PLUGINS, function(Event $event) {
+        Craft::$app->on(Application::EVENT_INIT, function() {
             $request = Craft::$app->getRequest();
 
             if ($request->getIsConsoleRequest() || ($request->getIsLivePreview() || $request->getIsPreview())) {
