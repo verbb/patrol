@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.0.2 - 2023-05-27
+
+### Changed
+- Only admins are now allowed to access plugin settings.
+
+### Fixed
+- Fix a warning being thrown - `Element query executed before Craft is fully initialized`.
+
 ## 5.0.1 - 2022-08-01
 
 ### Fixed
