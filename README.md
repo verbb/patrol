@@ -1,5 +1,5 @@
 # Patrol plugin for Craft CMS
-<img width="500" src="https://verbb.imgix.net/plugins/patrol/patrol-social-card.png?v=1">
+<img width="500" src="https://verbb.imgix.net/plugins/patrol/patrol-social-card.png?v=2">
 
 Patrol is a Craft CMS plugin for easy maintenance mode and smart HTTPS routing.
 
