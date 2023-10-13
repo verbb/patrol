@@ -23,8 +23,8 @@ class Patrol extends Plugin
     // Properties
     // =========================================================================
 
-    public string $schemaVersion = '3.0.0';
     public bool $hasCpSettings = true;
+    public string $schemaVersion = '3.0.0';
 
 
     // Traits
@@ -42,12 +42,13 @@ class Patrol extends Plugin
 
         self::$plugin = $this;
 
-        $this->_setPluginComponents();
-        $this->_setLogging();
-        $this->_registerCpRoutes();
         $this->_registerVariables();
-        $this->_registerCraftEventListeners();
+        $this->_registerEventHandlers();
         $this->_registerPermissions();
+
+        if (Craft::$app->getRequest()->getIsCpRequest()) {
+            $this->_registerCpRoutes();
+        }
     }
 
     public function getPluginName(): string
@@ -89,7 +90,7 @@ class Patrol extends Plugin
         });
     }
 
-    private function _registerCraftEventListeners(): void
+    private function _registerEventHandlers(): void
     {
         Craft::$app->on(Application::EVENT_INIT, function() {
             $request = Craft::$app->getRequest();

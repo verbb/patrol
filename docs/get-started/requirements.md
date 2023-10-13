@@ -1,7 +1,7 @@
 # Requirements
 
 ## Craft CMS
-Patrol requires Craft CMS 4.0 or greater.
+Patrol requires Craft CMS 5.0 or greater.
 
 ## PHP
-Patrol requires PHP 8.0.2 or greater.
+Patrol requires PHP 8.2 or greater.

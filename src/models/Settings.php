@@ -27,19 +27,6 @@ class Settings extends Model
     // Public Methods
     // =========================================================================
 
-    /**
-     * @return array
-     */
-    public function defineRules(): array
-    {
-        $rules = parent::defineRules();
-
-        $rules[] = ['sslRoutingRestrictedUrls', RestrictedUrl::class];
-        $rules[] = ['maintenanceModeAuthorizedIps', AuthorizedIp::class];
-
-        return $rules;
-    }
-
     public function getMaintenanceModeAuthorizedIps(): string
     {
         return $this->_getMultilineFromArray($this->maintenanceModeAuthorizedIps);
@@ -60,6 +47,20 @@ class Settings extends Model
         $values['sslRoutingRestrictedUrls'] = $this->_getArrayFromMultiline($sslRoutingRestrictedUrls);
 
         parent::setAttributes($values, $safeOnly);
+    }
+
+
+    // Protected Methods
+    // =========================================================================
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+
+        $rules[] = ['sslRoutingRestrictedUrls', RestrictedUrl::class];
+        $rules[] = ['maintenanceModeAuthorizedIps', AuthorizedIp::class];
+
+        return $rules;
     }
 
 
