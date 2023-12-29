@@ -1,12 +1,15 @@
 <?php
 namespace verbb\patrol\console\controllers;
 
+use craft\console\Controller;
+use craft\helpers\Console;
 use craft\helpers\StringHelper;
 
-use yii\console\Controller;
 use yii\console\ExitCode;
-use yii\helpers\Console;
 
+/**
+ * Manages Patrol.
+ */
 class AccessTokenController extends Controller
 {
     // Properties
@@ -19,7 +22,7 @@ class AccessTokenController extends Controller
     // =========================================================================
 
     /**
-     * Generate a new access token for dynamic IP authorization
+     * Generate a new access token for dynamic IP authorization.
      */
     public function actionGenerate(): int
     {
