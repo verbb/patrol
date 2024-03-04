@@ -22,7 +22,7 @@ return [
     ],
     'dev' => [
         'sslRoutingEnabled' => false,
-    ]
+    ],
     'staging' => [
         'maintenanceModePageUrl' => null,
         'maintenanceModeResponseStatusCode' => 410,
