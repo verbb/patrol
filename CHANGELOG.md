@@ -6,6 +6,12 @@
 - Now requires PHP `8.2.0+`.
 - Now requires Craft `5.0.0+`.
 
+## 5.0.3 - 2025-07-18
+
+### Changed
+- Update non-English translations.
+- Update English translations.
+
 ## 5.0.2 - 2023-05-27
 
 ### Changed
@@ -98,4 +104,5 @@
 - Updated file based settings support
 
 ## 3.0.0 - 2017-02-02
+
 - Initial (beta) release for Craft 3
