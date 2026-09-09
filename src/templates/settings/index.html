@@ -1,25 +1,16 @@
-{% extends 'patrol/_layouts' %}
+{% extends 'patrol/_layouts/settings' %}
 
 {% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
 
-{% requireAdmin %}
-
-{% set crumbs = [
-    { label: 'Patrol' | t('patrol'), url: url('patrol/settings') },
-    { label: 'Settings' | t('app'), url: url('patrol/settings') }
-] %}
-
-{% set selectedTab = 'settings' %}
 {% set fullPageForm = true %}
+{% set selectedTab = 'general' %}
+{% set pageTitle = 'General Settings' | t('patrol') %}
+{% set pageAction = 'plugins/save-plugin-settings' %}
+{% set pageUrl = 'patrol/settings' %}
 
-{% block blockContent %}
-
-<input type="hidden" name="action" value="plugins/save-plugin-settings">
-<input type="hidden" name="pluginHandle" value="patrol">
-
-{% namespace 'settings' %}
-
-<h2 class="first">{{ 'Maintenance Mode' | t('patrol') }}</h2>
+{% block settingsContent %}
+<h2>{{ 'Maintenance Mode' | t('patrol') }}</h2>
 
 {{ forms.lightswitchField({
     label: 'Enable Maintenance Mode' | t('patrol'),
@@ -68,7 +59,4 @@
     value: settings.getSslRoutingRestrictedUrls(),
     errors: settings.getErrors('sslRoutingRestrictedUrls'),
 }) }}
-    
-{% endnamespace %}
-
 {% endblock %}
