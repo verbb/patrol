@@ -1,49 +1,101 @@
 # Configuration
-Create a `patrol.php` file under your `/config` directory with the following options available to you. You can also use multi-environment options to change these per environment.
 
-The below shows the defaults already used by Patrol, so you don't need to add these options unless you want to modify the values.
+You can customise Patrol’s settings using a PHP configuration file. This is optional: each setting has a default, so you only need to include the values you want to change.
+
+To override a setting, create `patrol.php` in your Craft project’s `/config` directory and return an array of setting names and values. For example, the following will use `/maintenance` as the maintenance page:
 
 ```php
 <?php
 
 return [
-    '*' => [
-        'primaryDomain' => null,
-        'redirectStatusCode' => 302,
-
-        'sslRoutingBaseUrl' => "https://mysecuredwebsite.com",
-        'sslRoutingEnabled' => true,
-        'sslRoutingRestrictedUrls' => ['/'],
-
-        'maintenanceModeEnabled' => false,
-        'maintenanceModePageUrl' => '/offline',
-        'maintenanceModeAuthorizedIps' => ['::1', '127.0.0.1'],
-        'maintenanceModeResponseStatusCode' => 410,
-    ],
-    'dev' => [
-        'sslRoutingEnabled' => false,
-    ],
-    'staging' => [
-        'maintenanceModePageUrl' => null,
-        'maintenanceModeResponseStatusCode' => 410,
-    ],
-    'production' => [
-        'redirectStatusCode' => 301,
-        'maintenanceModeResponseStatusCode' => 503,
-    ],
+    'maintenanceModePageUrl' => '/maintenance',
 ];
 ```
 
-## Configuration options
-- `primaryDomain` - Primary domain to enforce.
-- `redirectStatusCode` - Redirect status code to use when redirecting.
-- `sslRoutingBaseUrl` - Tells Patrol what base URL to use when redirecting to SSL.
-- `sslRoutingEnabled` - Tells Patrol to force requests to be made over `https://`.
-- `sslRoutingRestrictedUrls` - Tells Patrol **where** `https://` should be enforced.
-- `maintenanceModeEnabled` - Tells Patrol that your site is on maintenance mode and it should start routing traffic differently. Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
-- `maintenanceModeAuthorizedIps` - IP addresses that should be allowed (without being logged in) during maintenance.
-- `maintenanceModeResponseStatusCode` - Tells Patrol what kind of `HttpException` to throw if you do not set a `$maintenanceModePageUrl`.
-- `maintenanceModeAccessTokens` - Access tokens that can be used to automatically add an IP to the allowed list.
+All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults.
+
+## Configuration Options
+
+::: reference
+### `primaryDomain`
+
+**Type:** `string` · **Default:** `''`
+
+Primary domain to enforce.
+:::
+
+
+::: reference
+### `redirectStatusCode`
+
+**Type:** `int` · **Default:** `302`
+
+Redirect status code to use when redirecting.
+:::
+
+
+::: reference
+### `sslRoutingBaseUrl`
+
+**Type:** `string` · **Default:** `''`
+
+Tells Patrol what base URL to use when redirecting to SSL.
+:::
+
+
+::: reference
+### `sslRoutingEnabled`
+
+**Type:** `bool` · **Default:** `false`
+
+Tells Patrol to force requests to be made over `https://`.
+:::
+
+
+::: reference
+### `sslRoutingRestrictedUrls`
+
+**Type:** `array` · **Default:** `['/']`
+
+Tells Patrol **where** `https://` should be enforced.
+:::
+
+
+::: reference
+### `maintenanceModeEnabled`
+
+**Type:** `bool` · **Default:** `false`
+
+Tells Patrol that your site is on maintenance mode and it should start routing traffic differently. Authorized users will see your site while unauthorized users will see either your offline page or an HTTP response with a custom status code.
+:::
+
+
+::: reference
+### `maintenanceModeAuthorizedIps`
+
+**Type:** `array` · **Default:** `['::1', '127.0.0.1']`
+
+IP addresses that should be allowed (without being logged in) during maintenance.
+:::
+
+
+::: reference
+### `maintenanceModeResponseStatusCode`
+
+**Type:** `int` · **Default:** `403`
+
+Tells Patrol what kind of `HttpException` to throw if you do not set a `$maintenanceModePageUrl`.
+:::
+
+
+::: reference
+### `maintenanceModeAccessTokens`
+
+**Type:** `array` · **Default:** `[]`
+
+Access tokens that can be used to automatically add an IP to the allowed list.
+:::
+
 
 ### Access Tokens
 Access tokens allow you to provide specific access. For example, with the following config set for `maintenanceModeAccessTokens`:
@@ -58,6 +110,14 @@ Access tokens allow you to provide specific access. For example, with the follow
 You will be able to send someone a link with the access token. When the visit that link, their IP will be added to the allowed list.
 - https://my-site.test/?access=ceo-access-token
 - https://my-site.test/?access=d0nn3bd8a2iza1ikjxxdo28iicabh7ts
+
+::: reference
+### `maintenanceModePageUrl`
+
+**Type:** `string` · **Default:** `'/offline'`
+
+The URL of the page shown during maintenance. Set this to the maintenance page you have created for your site.
+:::
 
 ## Control Panel
 You can also manage configuration settings through the Control Panel by visiting Settings → Patrol.
