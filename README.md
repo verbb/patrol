@@ -14,13 +14,14 @@ Patrol is a Craft CMS plugin for easy maintenance mode and smart HTTPS routing.
 ### Maintenance Mode 🚧
 - Put your site on maintenance mode
 - Define who can access the site while offline
+- Generate access-token links that add a visitor's current IP address to the allowlist
 - Reroute guests to an offline page (or custom response)
 
 ## Documentation
 Visit the [Patrol Plugin page](https://verbb.io/craft-plugins/patrol) for all documentation, guides, pricing and developer resources.
 
 ## Credit & Thanks
-Originally created by [Selvin Ortiz](https://github.com/selvindev).
+Originally created by Selvin Ortiz.
 
 ## Support
 Get in touch with us via the [Patrol Support page](https://verbb.io/craft-plugins/patrol/support) or by [creating a Github issue](https://github.com/verbb/patrol/issues)
