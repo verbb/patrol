@@ -4,11 +4,10 @@ Send public visitors to a project-owned offline page or response while approved 
 
 ## Features
 
-- **Maintenance mode:** Take the public site offline without disabling Craft itself.
-- **Custom offline response:** Present a branded page or another response owned by the project.
-- **Controlled bypass:** Let approved users or addresses continue through during maintenance.
-- **Access-token links:** Give an approved visitor a link that adds their current IP address to the allowlist.
-- **HTTPS enforcement:** Redirect selected site requests onto a secure scheme.
-- **Primary domain:** Choose whether the canonical host uses a bare or www-prefixed domain.
-- **Redirect control:** Use the status code and route scope appropriate for the deployment.
-- **HTTPS and domains:** Force HTTPS, choose the primary domain, limit where secure routing applies, and set the redirect status that fits the deployment. The rules remain application-aware rather than depending on one web-server configuration.
+- Take the public site offline without disabling Craft itself.
+- Present a branded page or another response owned by the project.
+- Let approved users or addresses continue through during maintenance.
+- Give an approved visitor a link that adds their current IP address to the allowlist.
+- Redirect selected site requests onto a secure scheme.
+- Choose whether the canonical host uses a bare or www-prefixed domain.
+- Use the status code and route scope appropriate for the deployment.
