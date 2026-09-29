@@ -75,7 +75,9 @@ Tells Patrol that your site is on maintenance mode and it should start routing t
 
 **Type:** `array` · **Default:** `['::1', '127.0.0.1']`
 
-IP addresses that should be allowed (without being logged in) during maintenance.
+Exact IP addresses that should be allowed (without being logged in) during maintenance. Wildcards and partial-address prefixes are not supported.
+
+Patrol uses the direct peer address unless the request came from a concrete proxy IP address or CIDR configured in Craft’s `trustedHosts` setting and the forwarded header is permitted by that proxy entry and Craft’s `ipHeaders` setting. Craft’s default `trustedHosts` value of `any` is not treated as a trusted proxy boundary for maintenance access. Configure the real proxy ranges rather than trusting forwarding headers from every caller.
 :::
 
 

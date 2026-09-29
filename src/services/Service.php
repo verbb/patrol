@@ -6,10 +6,12 @@ use verbb\patrol\Patrol;
 use Craft;
 use craft\base\Component;
 use craft\helpers\UrlHelper;
+use craft\web\Request;
 
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
+use yii\validators\IpValidator;
 use yii\web\HttpException;
 
 use Closure;
@@ -31,10 +33,10 @@ class Service extends Component
         $settings = Patrol::$plugin->getSettings();
         $request = Craft::$app->getRequest();
         $requestToken = $request->getQueryParam('access');
-        $requestingIp = $request->getUserIp();
+        $requestingIp = $this->getRequestingIp();
 
-        if (!empty($requestToken) && in_array($requestToken, $settings->maintenanceModeAccessTokens)) {
-            if (!in_array($requestingIp, $settings->maintenanceModeAuthorizedIps)) {
+        if ($requestingIp !== '' && !empty($requestToken) && in_array($requestToken, $settings->maintenanceModeAccessTokens, true)) {
+            if (!in_array($requestingIp, $settings->maintenanceModeAuthorizedIps, true)) {
                 $settings->maintenanceModeAuthorizedIps[] = $requestingIp;
 
                 Craft::$app->getPlugins()->savePluginSettings(Patrol::$plugin, $settings->getAttributes());
@@ -85,6 +87,7 @@ class Service extends Component
 
         $request->setHostInfo($http . $primaryDomain);
         Craft::$app->getResponse()->redirect($request->getUrl(), $settings->redirectStatusCode);
+        Craft::$app->end();
     }
 
     /**
@@ -195,6 +198,7 @@ class Service extends Component
         }
 
         Craft::$app->getResponse()->redirect($url, $settings->redirectStatusCode);
+        Craft::$app->end();
     }
 
     /**
@@ -228,16 +232,8 @@ class Service extends Component
             }
 
             if (is_array($authorizedIps) && count($authorizedIps)) {
-                if (in_array($requestingIp, $authorizedIps)) {
+                if (in_array($requestingIp, $authorizedIps, true)) {
                     return true;
-                }
-
-                foreach ($authorizedIps as $authorizedIp) {
-                    $authorizedIp = str_replace('*', '', $authorizedIp);
-
-                    if (stripos($requestingIp, $authorizedIp) === 0) {
-                        return true;
-                    }
                 }
 
                 $this->forceRedirect($maintenanceUrl);
@@ -266,25 +262,11 @@ class Service extends Component
     }
 
     /**
-     * Ensures that we get the right IP address even if behind CloudFlare or most proxies
-     *
-     * @return string
+     * Resolves a client address without trusting caller-supplied proxy headers by default.
      */
-    public function getRequestingIp()
+    public function getRequestingIp(): string
     {
-        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            return $_SERVER['HTTP_CF_CONNECTING_IP'];
-        }
-
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-
-        if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-            return $_SERVER['HTTP_X_REAL_IP'];
-        }
-
-        return $_SERVER['REMOTE_ADDR'];
+        return $this->_getTrustedClientIp(Craft::$app->getRequest());
     }
 
     /**
@@ -301,6 +283,7 @@ class Service extends Component
         }
 
         Craft::$app->getResponse()->redirect($redirectTo, $settings->redirectStatusCode);
+        Craft::$app->end();
     }
 
     /**
@@ -386,5 +369,106 @@ class Service extends Component
 
             return true;
         });
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    /**
+     * Forwarded addresses are accepted only from a concrete proxy range that also permits the header.
+     */
+    private function _getTrustedClientIp(Request $request): string
+    {
+        $remoteIp = $request->getRemoteIP();
+
+        if (!$remoteIp) {
+            return '';
+        }
+
+        $trustedHeaders = $this->_trustedHeadersForPeer($request, $remoteIp);
+
+        foreach ($request->ipHeaders as $header) {
+            if (!in_array(mb_strtolower($header), $trustedHeaders, true)) {
+                continue;
+            }
+
+            $value = $request->getHeaders()->get($header);
+
+            if (is_string($value) && ($clientIp = $this->_clientIpFromHeader($value, $request->trustedHosts))) {
+                return $clientIp;
+            }
+        }
+
+        return $remoteIp;
+    }
+
+    private function _trustedHeadersForPeer(Request $request, string $remoteIp): array
+    {
+        $validator = new IpValidator();
+
+        foreach ($request->trustedHosts as $cidr => $headers) {
+            if (!is_array($headers)) {
+                $cidr = $headers;
+                $headers = $request->secureHeaders;
+            }
+
+            // Universal ranges, including Craft's default `any`, are not an explicit proxy boundary.
+            if (!$this->_isConcreteTrustedRange($cidr)) {
+                continue;
+            }
+
+            $validator->setRanges($cidr);
+
+            if ($validator->validate($remoteIp)) {
+                return array_map('mb_strtolower', $headers);
+            }
+        }
+
+        return [];
+    }
+
+    private function _clientIpFromHeader(string $value, array $trustedHosts): ?string
+    {
+        $ips = preg_split('/\s*,\s*/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
+
+        if (!$ips) {
+            return null;
+        }
+
+        $trustedRanges = [];
+
+        foreach ($trustedHosts as $cidr => $headers) {
+            $range = is_array($headers) ? $cidr : $headers;
+
+            if ($this->_isConcreteTrustedRange($range)) {
+                $trustedRanges[] = $range;
+            }
+        }
+
+        $validator = new IpValidator();
+        $clientIp = null;
+
+        foreach (array_reverse($ips) as $ip) {
+            $ip = trim($ip);
+
+            if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
+                break;
+            }
+
+            $clientIp = $ip;
+            $validator->setRanges($trustedRanges);
+
+            if (!$trustedRanges || !$validator->validate($ip)) {
+                break;
+            }
+        }
+
+        return $clientIp;
+    }
+
+    private function _isConcreteTrustedRange(mixed $range): bool
+    {
+        return is_string($range) && !in_array(mb_strtolower(trim($range)), ['*', 'any', 'ipv4', 'ipv6', '0.0.0.0/0', '::/0'], true);
     }
 }
