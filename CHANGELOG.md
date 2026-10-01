@@ -5,6 +5,7 @@
 ### Fixed
 - Fixed a moderate-severity authorization bypass vulnerability.
 - Fixed a low-severity open redirect vulnerability.
+- Fixed a low-severity hard-coded credential vulnerability.
 
 ## 6.0.4 - 2026-09-30
 

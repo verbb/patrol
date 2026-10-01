@@ -100,18 +100,27 @@ Access tokens that can be used to automatically add an IP to the allowed list.
 
 
 ### Access Tokens
-Access tokens allow you to provide specific access. For example, with the following config set for `maintenanceModeAccessTokens`:
+Access tokens allow you to give someone access from their current IP address. Generate a unique token from your Craft project directory:
 
-```php
-'maintenanceModeAccessTokens' => [
-    'ceo-access-token',
-    'd0nn3bd8a2iza1ikjxxdo28iicabh7ts',
-],
+```shell
+php craft patrol/access-token/generate
 ```
 
-You will be able to send someone a link with the access token. When the visit that link, their IP will be added to the allowed list.
-- https://my-site.test/?access=ceo-access-token
-- https://my-site.test/?access=d0nn3bd8a2iza1ikjxxdo28iicabh7ts
+Store the generated value in an environment variable, then add it to your project’s `config/patrol.php` file:
+
+```php
+<?php
+
+use craft\helpers\App;
+
+return [
+    'maintenanceModeAccessTokens' => [
+        App::env('PATROL_MAINTENANCE_TOKEN'),
+    ],
+];
+```
+
+Send the person a link containing the token as the `access` query parameter. When they visit the link, Patrol adds their IP address to the allowed list. Generate a different token for each site and replace a token if it has been shared more widely than intended.
 
 ::: reference
 ### `maintenanceModePageUrl`

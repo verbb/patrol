@@ -16,8 +16,6 @@ return [
         '::1',
         '127.0.0.1',
     ],
-    'maintenanceModeAccessTokens' => [
-        'gecpqdfbfhvtnwjmfnazdejtvtraguvu',
-    ],
+    'maintenanceModeAccessTokens' => [],
     'limitCpAccessTo' => [],
 ];

