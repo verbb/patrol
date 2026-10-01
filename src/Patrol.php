@@ -95,7 +95,7 @@ class Patrol extends Plugin
         Craft::$app->on(Application::EVENT_INIT, function() {
             $request = Craft::$app->getRequest();
 
-            if ($request->getIsConsoleRequest() || ($request->getIsLivePreview() || $request->getIsPreview())) {
+            if ($request->getIsConsoleRequest()) {
                 return;
             }
 

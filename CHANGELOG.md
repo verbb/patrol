@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed a moderate-severity authorization bypass vulnerability.
+
 ## 6.0.4 - 2026-09-30
 
 ### Changed
