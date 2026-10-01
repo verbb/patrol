@@ -83,10 +83,11 @@ class Service extends Component
             return;
         }
 
-        $http = $request->getIsSecureConnection() ? 'https://' : 'http://';
+        $scheme = $request->getIsSecureConnection() ? 'https://' : 'http://';
+        $requestUrl = '/' . ltrim($request->getUrl(), '/\\');
+        $redirectUrl = $scheme . $primaryDomain . $requestUrl;
 
-        $request->setHostInfo($http . $primaryDomain);
-        Craft::$app->getResponse()->redirect($request->getUrl(), $settings->redirectStatusCode);
+        Craft::$app->getResponse()->redirect($redirectUrl, $settings->redirectStatusCode);
         Craft::$app->end();
     }
 
