@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed a moderate-severity HTTPS enforcement bypass vulnerability.
+- Fixed a low-severity credential exposure vulnerability.
 
 ## 6.0.5 - 2026-10-02
 

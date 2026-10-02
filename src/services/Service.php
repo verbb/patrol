@@ -40,19 +40,25 @@ class Service extends Component
         $request = Craft::$app->getRequest();
         $requestToken = $request->getQueryParam('access');
 
-        if ($requestToken === self::INSECURE_SAMPLE_ACCESS_TOKEN) {
+        if (!is_string($requestToken) || empty($requestToken) || $requestToken === self::INSECURE_SAMPLE_ACCESS_TOKEN || !in_array($requestToken, $settings->maintenanceModeAccessTokens, true)) {
+            return;
+        }
+
+        if (!$this->_isCanonicalMaintenanceAccessRequest($request)) {
+            $this->_redirectWithoutAccessToken($request);
+
             return;
         }
 
         $requestingIp = $this->getRequestingIp();
 
-        if ($requestingIp !== '' && !empty($requestToken) && in_array($requestToken, $settings->maintenanceModeAccessTokens, true)) {
-            if (!in_array($requestingIp, $settings->maintenanceModeAuthorizedIps, true)) {
-                $settings->maintenanceModeAuthorizedIps[] = $requestingIp;
+        if ($requestingIp !== '' && !in_array($requestingIp, $settings->maintenanceModeAuthorizedIps, true)) {
+            $settings->maintenanceModeAuthorizedIps[] = $requestingIp;
 
-                Craft::$app->getPlugins()->savePluginSettings(Patrol::$plugin, $settings->getAttributes());
-            }
+            Craft::$app->getPlugins()->savePluginSettings(Patrol::$plugin, $settings->getAttributes());
         }
+
+        $this->_redirectWithoutAccessToken($request);
     }
 
     /**
@@ -394,6 +400,89 @@ class Service extends Component
         $path = preg_replace('/\/+/', '/', urldecode($path)) ?? '';
 
         return '/' . ltrim($path, '/');
+    }
+
+    private function _isCanonicalMaintenanceAccessRequest(Request $request): bool
+    {
+        if (!$request->getIsSecureConnection()) {
+            return false;
+        }
+
+        $primaryDomain = mb_strtolower(trim(Patrol::$plugin->getSettings()->primaryDomain));
+
+        return $primaryDomain === '' || $primaryDomain === '*' || $primaryDomain === mb_strtolower(trim($request->getHostName()));
+    }
+
+    private function _redirectWithoutAccessToken(Request $request): void
+    {
+        $settings = Patrol::$plugin->getSettings();
+        $requestUrl = '/' . ltrim($this->_removeAccessTokenFromUrl($request->getUrl()), '/\\');
+        $primaryDomain = trim($settings->primaryDomain);
+
+        if ($primaryDomain !== '' && $primaryDomain !== '*') {
+            $baseUrl = 'https://' . $primaryDomain;
+        } else {
+            $baseUrl = preg_replace('/^http:/i', 'https:', trim((string)$request->getHostInfo())) ?? '';
+        }
+
+        $redirectUrl = rtrim($baseUrl, '/') . $requestUrl;
+
+        if (!filter_var($redirectUrl, FILTER_VALIDATE_URL)) {
+            throw new ErrorException(
+                Craft::t('patrol', '{url} is not a valid URL', ['url' => $redirectUrl])
+            );
+        }
+
+        $response = Craft::$app->getResponse();
+        $response->setNoCacheHeaders();
+        $response->getHeaders()->set('Referrer-Policy', 'no-referrer');
+        $response->redirect($redirectUrl, 302);
+
+        Craft::$app->end();
+    }
+
+    private function _removeAccessTokenFromUrl(string $url): string
+    {
+        [$url, $fragment] = array_pad(explode('#', $url, 2), 2, null);
+        $queryPosition = strpos($url, '?');
+
+        if ($queryPosition === false) {
+            return $url . ($fragment !== null ? '#' . $fragment : '');
+        }
+
+        $path = substr($url, 0, $queryPosition);
+        $query = substr($url, $queryPosition + 1);
+        $querySeparators = (string)ini_get('arg_separator.input') ?: '&';
+        $parts = preg_split('/([' . preg_quote($querySeparators, '/') . '])/', $query, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [];
+        $cleanQuery = '';
+        $hasPart = false;
+
+        foreach ($parts as $index => $part) {
+            if ($index % 2 !== 0 || $this->_isAccessTokenQueryPart($part)) {
+                continue;
+            }
+
+            if ($hasPart) {
+                $cleanQuery .= $parts[$index - 1] ?? '&';
+            }
+
+            $cleanQuery .= $part;
+            $hasPart = true;
+        }
+
+        if ($cleanQuery !== '') {
+            $path .= '?' . $cleanQuery;
+        }
+
+        return $path . ($fragment !== null ? '#' . $fragment : '');
+    }
+
+    private function _isAccessTokenQueryPart(string $part): bool
+    {
+        $key = urldecode(explode('=', $part, 2)[0]);
+        $key = explode("\0", $key, 2)[0];
+
+        return $key === 'access' || preg_match('/^access\[[^\]]*\]/', $key) === 1;
     }
 
     /**

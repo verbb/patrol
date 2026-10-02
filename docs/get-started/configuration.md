@@ -120,7 +120,9 @@ return [
 ];
 ```
 
-Send the person a link containing the token as the `access` query parameter. When they visit the link, Patrol adds their IP address to the allowed list. Generate a different token for each site and replace a token if it has been shared more widely than intended.
+Send the person a link on the site's canonical HTTPS domain containing the token as the `access` query parameter. When they visit the link, Patrol adds their IP address to the allowed list and redirects them to the same URL without the token. Links opened over HTTP or on another domain are redirected without granting access.
+
+Treat each token as a reusable password: generate a different token for each site, send it only over a secure channel, and replace it if it has been shared more widely than intended. Removing or replacing a token prevents future use of the link but does not remove IP addresses that were already authorized.
 
 ::: reference
 ### `maintenanceModePageUrl`
