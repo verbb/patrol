@@ -1,6 +1,6 @@
 {% extends parentLayout ?? '_layouts/cp' %}
 
-{% do view.registerAssetBundle('verbb\\patrol\\assetbundles\\PatrolAsset') %}
+{% do view.registerAssetBundle('verbb\\patrol\\web\\assets\\cp\\PatrolAsset') %}
 
 {% if title is not defined %}
     {% set title = craft.patrol.getPluginName() | t('patrol') %}

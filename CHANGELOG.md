@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- Updated the required version of `verbb/base` to 3.0.19.
+
 ### Fixed
 - Fixed a moderate-severity authorization bypass vulnerability.
 - Fixed a low-severity open redirect vulnerability.
