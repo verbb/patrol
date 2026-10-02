@@ -120,7 +120,9 @@ class Service extends Component
         $view = Craft::$app->getView();
 
         if ($settings->sslRoutingEnabled && !$request->getIsConsoleRequest()) {
-            $requestedUrl = $request->getUrl();
+            // Decode the path once for matching while preserving the external base path.
+            $requestedPath = explode('?', $request->getUrl(), 2)[0];
+            $requestedPath = $this->_normalizeUrlPath($requestedPath);
             $restrictedUrls = $settings->sslRoutingRestrictedUrls;
 
             if (!$request->isSecureConnection) {
@@ -130,9 +132,9 @@ class Service extends Component
                         $restrictedUrl = $view->renderObjectTemplate($restrictedUrl, $this->getDynamicParams());
                     }
 
-                    $restrictedUrl = '/' . ltrim($restrictedUrl, '/');
+                    $restrictedUrl = $this->_normalizeUrlPath($restrictedUrl);
 
-                    if (stripos($requestedUrl, $restrictedUrl) === 0) {
+                    if (stripos($requestedPath, $restrictedUrl) === 0) {
                         $this->forceSsl();
                     }
                 }
@@ -386,6 +388,13 @@ class Service extends Component
 
     // Private Methods
     // =========================================================================
+
+    private function _normalizeUrlPath(string $path): string
+    {
+        $path = preg_replace('/\/+/', '/', urldecode($path)) ?? '';
+
+        return '/' . ltrim($path, '/');
+    }
 
     /**
      * Forwarded addresses are accepted only from a concrete proxy range that also permits the header.
