@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 6.0.6 - 2026-10-05
 
 ### Fixed
 - Fixed a moderate-severity HTTPS enforcement bypass vulnerability.
