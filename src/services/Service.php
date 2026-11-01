@@ -161,7 +161,7 @@ class Service extends Component
      */
     protected function getDynamicParams(): array
     {
-        if (is_null($this->dynamicParams)) {
+        if (!$this->dynamicParams) {
             $this->dynamicParams = [
                 'siteUrl' => UrlHelper::siteUrl(),
                 'cpTrigger' => Craft::$app->getConfig()->getGeneral()->cpTrigger,
