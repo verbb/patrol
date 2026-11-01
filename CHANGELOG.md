@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 6.0.8 - 2026-11-01
 
 ### Fixed
 - Fixed dynamic values such as `{cpTrigger}` and `{siteUrl}` not being parsed in SSL routing settings, which caused a `/{cpTrigger}` restricted URL to force SSL across the whole site.
