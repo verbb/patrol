@@ -8,5 +8,12 @@
             "get-started/requirements",
             "get-started/configuration"
         ]
+    },
+    {
+        "title": "Feature Tour",
+        "collapsable": false,
+        "children": [
+            "feature-tour/permissions"
+        ]
     }
 ]
