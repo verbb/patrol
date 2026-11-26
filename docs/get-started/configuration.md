@@ -95,7 +95,7 @@ Tells Patrol what kind of `HttpException` to throw if you do not set a `$mainten
 
 **Type:** `array` · **Default:** `[]`
 
-Access tokens that can be used to automatically add an IP to the allowed list.
+Access tokens that let a visitor authorize their own IP address during maintenance. See [Access Tokens](#access-tokens) for how the link works.
 :::
 
 
@@ -120,9 +120,11 @@ return [
 ];
 ```
 
-Send the person a link on the site's canonical HTTPS domain containing the token as the `access` query parameter. When they visit the link, Patrol adds their IP address to the allowed list and redirects them to the same URL without the token. Links opened over HTTP or on another domain are redirected without granting access.
+Send the person a link on the site's canonical HTTPS domain containing the token as the `access` query parameter. When they visit the link, Patrol authorizes their IP address and redirects them to the same URL without the token. Links opened over HTTP or on another domain are redirected without granting access.
 
-Treat each token as a reusable password: generate a different token for each site, send it only over a secure channel, and replace it if it has been shared more widely than intended. Removing or replacing a token prevents future use of the link but does not remove IP addresses that were already authorized.
+Patrol stores IP addresses authorized this way in the database, separately from `maintenanceModeAuthorizedIps`. Access tokens therefore work on environments where `allowAdminChanges` is `false`, and the addresses they add are checked alongside the list in `config/patrol.php` without changing it. They don't appear in the **Authorized IPs** setting. Use the [`patrol/authorized-ips`](../developers/console-commands.md#authorized-ips) console commands to list or remove them.
+
+Treat each token as a reusable password: generate a different token for each site, send it only over a secure channel, and replace it if it has been shared more widely than intended. Removing or replacing a token prevents future use of the link but does not remove IP addresses that were already authorized, so remove those with `patrol/authorized-ips/remove` or `patrol/authorized-ips/clear`.
 
 ::: reference
 ### `maintenanceModePageUrl`

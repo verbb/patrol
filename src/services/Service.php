@@ -2,15 +2,19 @@
 namespace verbb\patrol\services;
 
 use verbb\patrol\Patrol;
+use verbb\patrol\db\Table;
 
 use Craft;
 use craft\base\Component;
+use craft\db\Query;
+use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use craft\web\Request;
 
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
+use yii\db\IntegrityException;
 use yii\validators\IpValidator;
 use yii\web\HttpException;
 
@@ -53,12 +57,85 @@ class Service extends Component
         $requestingIp = $this->getRequestingIp();
 
         if ($requestingIp !== '' && !in_array($requestingIp, $settings->maintenanceModeAuthorizedIps, true)) {
-            $settings->maintenanceModeAuthorizedIps[] = $requestingIp;
-
-            Craft::$app->getPlugins()->savePluginSettings(Patrol::$plugin, $settings->getAttributes());
+            $this->addTokenAuthorizedIp($requestingIp);
         }
 
         $this->_redirectWithoutAccessToken($request);
+    }
+
+    /**
+     * Returns the IP addresses authorized through an access token.
+     *
+     * These are kept in the database rather than plugin settings, so they work when project config is read-only
+     * and don't replace a `maintenanceModeAuthorizedIps` list set in `config/patrol.php`.
+     */
+    public function getTokenAuthorizedIps(): array
+    {
+        if (!$this->_canUseAuthorizedIpsTable()) {
+            return [];
+        }
+
+        return (new Query())
+            ->select(['ip'])
+            ->from(Table::AUTHORIZED_IPS)
+            ->orderBy(['dateCreated' => SORT_ASC, 'id' => SORT_ASC])
+            ->column();
+    }
+
+    public function isTokenAuthorizedIp(string $ip): bool
+    {
+        if ($ip === '' || !$this->_canUseAuthorizedIpsTable()) {
+            return false;
+        }
+
+        return (new Query())
+            ->from(Table::AUTHORIZED_IPS)
+            ->where(['ip' => $ip])
+            ->exists();
+    }
+
+    public function addTokenAuthorizedIp(string $ip): bool
+    {
+        if ($ip === '') {
+            return false;
+        }
+
+        // The table only exists once Patrol's migrations have run, which can lag behind a deployment.
+        if (!$this->_canUseAuthorizedIpsTable()) {
+            Patrol::error('Unable to authorize “{ip}” until Patrol’s database migrations have been run.', ['ip' => $ip]);
+
+            return false;
+        }
+
+        if ($this->isTokenAuthorizedIp($ip)) {
+            return true;
+        }
+
+        try {
+            Db::insert(Table::AUTHORIZED_IPS, ['ip' => $ip]);
+        } catch (IntegrityException) {
+            // A concurrent request for the same IP has already stored it.
+        }
+
+        return true;
+    }
+
+    public function removeTokenAuthorizedIp(string $ip): bool
+    {
+        if (!$this->_canUseAuthorizedIpsTable()) {
+            return false;
+        }
+
+        return Db::delete(Table::AUTHORIZED_IPS, ['ip' => $ip]) > 0;
+    }
+
+    public function clearTokenAuthorizedIps(): int
+    {
+        if (!$this->_canUseAuthorizedIpsTable()) {
+            return 0;
+        }
+
+        return Db::delete(Table::AUTHORIZED_IPS);
     }
 
     /**
@@ -247,17 +324,16 @@ class Service extends Component
                 return true;
             }
 
-            if (empty($authorizedIps)) {
-                $this->forceRedirect($maintenanceUrl);
+            if (is_array($authorizedIps) && in_array($requestingIp, $authorizedIps, true)) {
+                return true;
             }
 
-            if (is_array($authorizedIps) && count($authorizedIps)) {
-                if (in_array($requestingIp, $authorizedIps, true)) {
-                    return true;
-                }
-
-                $this->forceRedirect($maintenanceUrl);
+            // Only query token-authorized IPs once the configured list has not matched.
+            if ($this->isTokenAuthorizedIp($requestingIp)) {
+                return true;
             }
+
+            $this->forceRedirect($maintenanceUrl);
         }
 
         return false;
@@ -394,6 +470,12 @@ class Service extends Component
 
     // Private Methods
     // =========================================================================
+
+    private function _canUseAuthorizedIpsTable(): bool
+    {
+        // Patrol runs before Craft's own pending-update checks, so avoid querying a table that may not exist yet.
+        return !Craft::$app->getPlugins()->isPluginUpdatePending(Patrol::$plugin);
+    }
 
     private function _normalizeUrlPath(string $path): string
     {

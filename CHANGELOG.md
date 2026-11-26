@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added the `patrol/authorized-ips/list`, `patrol/authorized-ips/remove` and `patrol/authorized-ips/clear` console commands to manage IP addresses authorized through an access token. ([#24](https://github.com/verbb/patrol/issues/24))
+
+### Changed
+- IP addresses authorized through an access token are now stored in the database and checked alongside `maintenanceModeAuthorizedIps`, instead of being added to plugin settings. ([#24](https://github.com/verbb/patrol/issues/24))
+
+### Fixed
+- Fixed access tokens causing an error on environments where `allowAdminChanges` is disabled. ([#24](https://github.com/verbb/patrol/issues/24))
+- Fixed access tokens not authorizing an IP address when `maintenanceModeAuthorizedIps` is set in `config/patrol.php`, and copying other `config/patrol.php` settings into project config. ([#24](https://github.com/verbb/patrol/issues/24))
+
 ## 6.0.8 - 2026-11-01
 
 ### Fixed

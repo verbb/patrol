@@ -33,6 +33,7 @@
 {{ forms.textareaField({
     label: 'Authorized IPs' | t('patrol'),
     instructions: 'The IP addresses that should be able to access the site on maintenance mode. Enter an IP per-line.' | t('patrol'),
+    tip: 'IP addresses added through an access token are stored separately. Manage them with the `patrol/authorized-ips` console commands.' | t('patrol'),
     name: 'maintenanceModeAuthorizedIps',
     rows: 10,
     value: settings.getMaintenanceModeAuthorizedIps(),

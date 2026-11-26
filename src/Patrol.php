@@ -24,7 +24,7 @@ class Patrol extends Plugin
     // =========================================================================
 
     public bool $hasCpSettings = true;
-    public string $schemaVersion = '3.0.0';
+    public string $schemaVersion = '3.1.0';
 
 
     // Traits

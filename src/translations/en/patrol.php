@@ -4,6 +4,7 @@ return [
   'Access the site when maintenance mode is enabled' => 'Access the site when maintenance mode is enabled',
   'Authorized IPs' => 'Authorized IPs',
   'Enable Maintenance Mode' => 'Enable Maintenance Mode',
+  'IP addresses added through an access token are stored separately. Manage them with the `patrol/authorized-ips` console commands.' => 'IP addresses added through an access token are stored separately. Manage them with the `patrol/authorized-ips` console commands.',
   'Maintenance Mode' => 'Maintenance Mode',
   'Maintenance Mode Page URL' => 'Maintenance Mode Page URL',
   'Patrol' => 'Patrol',
