@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 6.1.0 - 2026-11-29
 
 ### Added
 - Added the `patrol/authorized-ips/list`, `patrol/authorized-ips/remove` and `patrol/authorized-ips/clear` console commands to manage IP addresses authorized through an access token. ([#24](https://github.com/verbb/patrol/issues/24))
